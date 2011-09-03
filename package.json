@@ -1,12 +1,23 @@
 {
-	"name": "smpp",
-	"version": "0.0.1",
-	"description": "Low-level implementation of SMPP protocol (client and server) in node.js",
-	"author": "Ali Farhadi <a.farhadi@gmail.com>",
-	"engines": { "node": ">= 0.5.5" },
-	"main" : "./lib/smpp",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/farhadi/node-smpp.git"
-	}
+  "name": "smpp",
+  "version": "0.0.1",
+  "description": "Low-level implementation of SMPP protocol (client and server) in node.js",
+  "author": "Ali Farhadi <a.farhadi@gmail.com>",
+  "engines": {
+    "node": ">= 0.5.5"
+  },
+  "main": "./lib/smpp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/farhadi/node-smpp.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/farhadi/node-smpp/master/LICENSE"
+    }
+  ],
+  "devDependencies": {
+    "expresso": "~0.8.1"
+  }
 }
