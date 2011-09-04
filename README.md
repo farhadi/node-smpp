@@ -8,10 +8,13 @@ Installation
 
     npm install smpp
 
+Note that it only works on node 0.5.5 and higher.
+
 Usage
 -----
 ### Creating a SMPP session
 
+``` javascript
     var smpp = require('smpp');
     var session = smpp.createSession('example.com', 2775);
     session.bind_transceiver({
@@ -31,9 +34,11 @@ Usage
 			});
         }
     });
+```
 
 ### Creating a SMPP server
 
+``` javascript
     var smpp = require('smpp');
     var server = smpp.createServer(function(session) {
         session.on('bind_transceiver', function(pdu) {
@@ -54,6 +59,7 @@ Usage
         });
     });
     server.listen(2775);
+```
 
 API
 -------
@@ -73,8 +79,10 @@ session object to the `'session'` event listener.
 Sends a pdu request/response to the MC/ESME over the session.
 The `pdu` is an instance of `smpp.PDU` which might be either a response or
 request pdu.
+
 When sending a request pdu, `pdu.sequence_number` will be automatically set to
 the proper value.
+
 If the `pdu` is a request pdu, when the relevant respose is received, the
 optional `callback` parameter will be invoked with the response pdu passed to it.
 
@@ -94,10 +102,13 @@ Resumes the session after a call to `pause()`.
 For all smpp operations you can call methods with the same name as the operation
 name, which is equivalent to createing a pdu instance and then sending it over
 the session.
+
 For example calling `session.submit_sm(options, callback)` is equivalent to:
 
+``` javascript
     var pdu = new smpp.PDU('submit_sm', options);
     session.send(pdu, callback);
+```
 
 #### Event: 'connect'
 Emitted when the session connection successfully is established.
@@ -135,20 +146,28 @@ connections directed to any IPv4 address.
 This function is asynchronous. The last parameter `callback` will be called when
 the server has been bound.
 
+#### Event: 'session' `(session)`
+Emitted when a new session connection is established.
+`session` is an instance of `smpp.Session`.
+
+*for other server methods/events documentations see node's `net.Server` docs.*
+
 ### smpp.PDU
 This is the base object for a PDU request or response.
 
 #### new smpp.PDU(command, [options])
 Creates a new PDU object with the specified `command` and `options`.
+
 `options` is a list of parameters acceptable by the specified `command`.
 
 #### pdu.isResponse()
-Returns `true` if the pdu is response pdu, otherwise returns false;
+Returns `true` if the pdu is a response pdu, otherwise returns false;
 
 #### pdu.response([options])
 For a request pdu, calling `response()` creates and returns a response pdu for
 that request.
 
+``` javascript
     session.on('submit_sm', function(pdu) {
         var msgid = .... ; // generate a message_id for this message.
         session.send(pdu.response({
@@ -164,11 +183,13 @@ that request.
     session.on('enquire_link', function(pdu) {
         session.send(pdu.response());
     });
+```
 
 Roadmap
 -------
-TLV options is not implemented yet.
-It will eventually be a complete implementation of SMPP v5.0.
+* TLV options is not implemented yet.
+* Support for secure sessions using TLS.
+* It will eventually be a complete implementation of SMPP v5.0.
 
 License
 -------
