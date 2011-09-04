@@ -1,7 +1,7 @@
 {
   "name": "smpp",
   "version": "0.0.1",
-  "description": "Low-level implementation of SMPP protocol (client and server) in node.js",
+  "description": "SMPP client and server implementation in node.js",
   "author": "Ali Farhadi <a.farhadi@gmail.com>",
   "engines": {
     "node": ">= 0.5.5"
