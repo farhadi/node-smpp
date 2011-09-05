@@ -48,7 +48,7 @@ Usage
             checkAsyncUserPass(pdu.system_id, pdu.password, function(err) {
                 if (err) {
                     session.send(pdu.response({
-                        command_status: 0x0E // ESME_RINVPASWD (Invaid Password)
+                        command_status: smpp.ESME_RINVPASWD // (Invaid Password)
                     }));
                     session.close();
                     return;
