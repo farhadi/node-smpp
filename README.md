@@ -2,6 +2,7 @@ node-smpp
 =========
 SMPP client and server implementation in node.js.
 
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=farhadi&url=https://github.com/farhadi/node-smpp&title=node-smpp&language=en_GB&tags=github&category=software)
 
 Installation
 ------------
