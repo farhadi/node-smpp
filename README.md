@@ -137,6 +137,9 @@ Emitted when a pdu is being sent over the session with the pdu as the argument.
 #### Event: 'pdu' `(pdu)`
 Emitted upon receiving a pdu.
 
+#### Event: 'unknown' `(pdu)`
+Emitted upon receiving an unknown pdu.
+
 #### Shortcut events
 When a pdu is received, after emitting the `'pdu'` event, an event with the same
 name as the operation of that pdu will also be emitted.
@@ -177,6 +180,8 @@ Returns `true` if the pdu is a response pdu, otherwise returns false;
 #### pdu.response([options])
 For a request pdu, calling `response()` creates and returns a response pdu for
 that request.
+
+For an unknown pdu, `response()` creates and returns a `generic_nack` pdu.
 
 ``` javascript
     session.on('submit_sm', function(pdu) {
