@@ -4,6 +4,16 @@ SMPP client and server implementation in node.js.
 
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=farhadi&url=https://github.com/farhadi/node-smpp&title=node-smpp&language=en_GB&tags=github&category=software)
 
+Introduction
+------------
+This is a complete implementation of SMPP v5.0 in node.js, with support for
+custom commands and tlvs.
+
+The name of the methods and parameters in this implementation are equivalent to
+the names defined in SMPP specification. So get a copy of
+[SMPP v5.0 Specification](http://www.smsforum.net/smppv50.pdf.zip)
+for a list of available operations and their parameters.
+
 Installation
 ------------
 
@@ -188,9 +198,8 @@ that request.
 
 Roadmap
 -------
-* TLV options is not implemented yet.
 * Support for secure sessions using TLS.
-* It will eventually be a complete implementation of SMPP v5.0.
+* More test coverage.
 
 License
 -------
