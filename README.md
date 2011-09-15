@@ -94,7 +94,7 @@ request pdu.
 When sending a request pdu, `pdu.sequence_number` will be automatically set to
 the proper value.
 
-If the `pdu` is a request pdu, when the relevant respose is received, the
+If the `pdu` is a request pdu, when the relevant response is received, the
 optional `callback` parameter will be invoked with the response pdu passed to it.
 
 #### session.close()
@@ -173,6 +173,45 @@ This is the base object for a PDU request or response.
 Creates a new PDU object with the specified `command` and `options`.
 
 `options` is a list of parameters acceptable by the specified `command`.
+The name of the parameters are equivalent to the names specified in SMPP
+specification v5.0. The order of the parameters doesn't matter. If you don't
+specify a required parameter in `options` a default value (usually null or 0 for
+integers) will be used.
+
+For the type of the parameters note the following rules:
+
+* For `Integer` parameters (no matter what the length is) you must specify a
+value of type `number` in JavaScript.
+* For `Octet-String` and `COctet-String` parameters you can specify either a
+`Buffer` or a `String`.
+* For the fields that accept SMPP Time Format (`broadcast_end_time`,
+`schedule_delivery_time`, `validity_period`, `final_date`) you can specify a
+Javascript Date instance which will be automatically converted to a SMPP
+absolute time string. For relative times you don't need to specify the whole
+string, specifying a portion of it is enough. for example '0430' will be
+converted to '000000000430000R'.
+* For `short_message` and `message_payload` fields you can specify a buffer or a
+string or an object containing `udh` and `message` properties, while `udh` is a
+buffer and `message` is either a string or a buffer. strings will be
+automatically encoded using ucs2 or ascii depending on their characters. Also
+`data_coding` (if not specified) will be automatically set to 0x01 or 0x08 for
+ascii and ucs2 encodings respectively. Also UDH indicator bit in `esm_class`
+is automatically set if `udh` exists.
+* `sm_length` parameter is not needed. It will be automatically set depending on
+the length of the `short_message`.
+* `dest_address` parameter in `submit_multi` operation must be an array of
+objects containing either `dest_addr_ton`, `dest_addr_npi` and,
+`destination_addr` properties or `dl_name` property for SME addresses or
+Distribution Lists respectively.
+* `unsuccess_sme` parameter in `submit_multi_resp` operation must be an array of
+objects containing `dest_addr_ton`, `dest_addr_npi`, `destination_addr` and,
+`error_status_code` properties.
+* `number_of_dests` and `no_unsuccess` parameters are not needed. They will be
+automatically set depending on the `dest_address` and `unsuccess_sme` parameters
+respectively.
+* TLV parameters which can be specified multiple times
+(e.g. `broadcast_area_identifier`), must be specified as an array, even if you
+want to specifiy just one item.
 
 #### pdu.isResponse()
 Returns `true` if the pdu is a response pdu, otherwise returns false;
