@@ -125,7 +125,7 @@ For example calling `session.submit_sm(options, callback)` is equivalent to:
 Emitted when the session connection successfully is established.
 
 #### Event: 'close'
-Emitted when the conntion is fully closed.
+Emitted when the connection is fully closed.
 
 #### Event: 'error' `(error)`
 Emitted when an error occurs. The `'close'` event will be called directly
