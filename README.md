@@ -2,8 +2,6 @@ node-smpp
 =========
 SMPP client and server implementation in node.js.
 
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=farhadi&url=https://github.com/farhadi/node-smpp&title=node-smpp&language=en_GB&tags=github&category=software)
-
 Introduction
 ------------
 This is a complete implementation of SMPP v5.0 in node.js, with support for
@@ -11,7 +9,7 @@ custom commands and tlvs.
 
 The name of the methods and parameters in this implementation are equivalent to
 the names defined in SMPP specification. So get a copy of
-[SMPP v5.0 Specification](http://www.smsforum.net/smppv50.pdf.zip)
+[SMPP v5.0 Specification](http://farhadi.ir/downloads/smppv50.pdf)
 for a list of available operations and their parameters.
 
 Installation
@@ -26,50 +24,50 @@ Usage
 ### Creating a SMPP session
 
 ``` javascript
-    var smpp = require('smpp');
-    var session = smpp.createSession('example.com', 2775);
-    session.bind_transceiver({
-        system_id: 'YOUR_SYSTEM_ID',
-        password: 'YOUR_PASSWORD'
-    }, function(pdu) {
-        if (pdu.command_status == 0) {
-            // Successfully bound
-            session.submit_sm({
-                destination_addr: 'DESTINATION NUMBER',
-                short_message: 'Hello!'
-            }, function(pdu) {
-                if (pdu.command_status == 0) {
-                    // Message successfully sent
-                    console.log(pdu.message_id);
-                }
-			});
-        }
-    });
+var smpp = require('smpp');
+var session = smpp.connect('example.com', 2775);
+session.bind_transceiver({
+	system_id: 'YOUR_SYSTEM_ID',
+	password: 'YOUR_PASSWORD'
+}, function(pdu) {
+	if (pdu.command_status == 0) {
+		// Successfully bound
+		session.submit_sm({
+			destination_addr: 'DESTINATION NUMBER',
+			short_message: 'Hello!'
+		}, function(pdu) {
+			if (pdu.command_status == 0) {
+				// Message successfully sent
+				console.log(pdu.message_id);
+			}
+		});
+	}
+});
 ```
 
 ### Creating a SMPP server
 
 ``` javascript
-    var smpp = require('smpp');
-    var server = smpp.createServer(function(session) {
-        session.on('bind_transceiver', function(pdu) {
-            // we pause the session to prevent further incoming pdu events,
-            // untill we authorize the session with some async operation.
-            session.pause();
-            checkAsyncUserPass(pdu.system_id, pdu.password, function(err) {
-                if (err) {
-                    session.send(pdu.response({
-                        command_status: smpp.ESME_RINVPASWD // (Invaid Password)
-                    }));
-                    session.close();
-                    return;
-                }
-                session.send(pdu.response());
-                session.resume();
-            });
-        });
-    });
-    server.listen(2775);
+var smpp = require('smpp');
+var server = smpp.createServer(function(session) {
+	session.on('bind_transceiver', function(pdu) {
+		// we pause the session to prevent further incoming pdu events,
+		// untill we authorize the session with some async operation.
+		session.pause();
+		checkAsyncUserPass(pdu.system_id, pdu.password, function(err) {
+			if (err) {
+				session.send(pdu.response({
+					command_status: smpp.ESME_RBINDFAIL
+				}));
+				session.close();
+				return;
+			}
+			session.send(pdu.response());
+			session.resume();
+		});
+	});
+});
+server.listen(2775);
 ```
 
 API
@@ -117,8 +115,8 @@ the session.
 For example calling `session.submit_sm(options, callback)` is equivalent to:
 
 ``` javascript
-    var pdu = new smpp.PDU('submit_sm', options);
-    session.send(pdu, callback);
+var pdu = new smpp.PDU('submit_sm', options);
+session.send(pdu, callback);
 ```
 
 #### Event: 'connect'
@@ -223,21 +221,21 @@ that request.
 For an unknown pdu, `response()` creates and returns a `generic_nack` pdu.
 
 ``` javascript
-    session.on('submit_sm', function(pdu) {
-        var msgid = .... ; // generate a message_id for this message.
-        session.send(pdu.response({
-            message_id: msgid
-        }));
-    });
+session.on('submit_sm', function(pdu) {
+	var msgid = .... ; // generate a message_id for this message.
+	session.send(pdu.response({
+		message_id: msgid
+	}));
+});
 
-    session.on('unbind', function(pdu) {
-        session.send(pdu.response());
-        session.close();
-    });
+session.on('unbind', function(pdu) {
+	session.send(pdu.response());
+	session.close();
+});
 
-    session.on('enquire_link', function(pdu) {
-        session.send(pdu.response());
-    });
+session.on('enquire_link', function(pdu) {
+	session.send(pdu.response());
+});
 ```
 
 Roadmap
