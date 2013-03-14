@@ -2,6 +2,8 @@ node-smpp
 =========
 SMPP client and server implementation in node.js.
 
+[![Build Status](https://travis-ci.org/farhadi/node-smpp.png)](https://travis-ci.org/farhadi/node-smpp)
+
 Introduction
 ------------
 This is a complete implementation of SMPP v5.0 in node.js, with support for
@@ -16,8 +18,6 @@ Installation
 ------------
 
     npm install smpp
-
-Note that it only works on node 0.5.5 and higher.
 
 Usage
 -----
@@ -73,14 +73,14 @@ server.listen(2775);
 API
 -------
 
-### smpp.createSession([host], [port])
+### smpp.connect([host], [port])
 Creates a new smpp session to the given `host` and `port`. If `port` is omited,
 the default smpp port (2775) will be used. If `host` is also omitted, `localhost`
 will be assumed.
 
 ### smpp.Session
 This is the base object for a SMPP session. sessions can be created by calling
-`smpp.createSession()` or can be created by a smpp server when a client
+`smpp.connect()` or can be created by a smpp server when a client
 establishes a connection to the server. In this case the server passes the
 session object to the `'session'` event listener.
 

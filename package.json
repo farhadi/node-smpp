@@ -4,7 +4,7 @@
   "description": "SMPP client and server implementation in node.js",
   "author": "Ali Farhadi <a.farhadi@gmail.com>",
   "engines": {
-    "node": ">= 0.5.5"
+    "node": ">=0.5.5"
   },
   "main": "./lib/smpp",
   "repository": {
@@ -17,7 +17,10 @@
       "url": "https://raw.github.com/farhadi/node-smpp/master/LICENSE"
     }
   ],
+  "scripts": {
+    "test": "mocha -u tdd"
+  },
   "devDependencies": {
-    "expresso": "~0.8.1"
+    "mocha": "*"
   }
 }
