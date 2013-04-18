@@ -4,7 +4,7 @@
   "description": "SMPP client and server implementation in node.js",
   "author": "Ali Farhadi <a.farhadi@gmail.com>",
   "engines": {
-    "node": ">=0.5.5"
+    "node": ">=0.8.0"
   },
   "main": "./lib/smpp",
   "repository": {
@@ -21,6 +21,9 @@
     "test": "mocha -u tdd"
   },
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "~1.9.0"
+  },
+  "dependencies": {
+    "iconv": "~2.0.4"
   }
 }
