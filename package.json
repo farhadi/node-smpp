@@ -21,7 +21,8 @@
     "test": "mocha -u tdd"
   },
   "devDependencies": {
-    "mocha": "~1.9.0"
+    "mocha": "~1.9.0",
+    "q": "^1.0.1"
   },
   "dependencies": {
     "iconv": "~2.0.4"
