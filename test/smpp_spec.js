@@ -1,19 +1,18 @@
-var smpp   = require("../lib/smpp");
+var smpp     = require("../lib/smpp");
 var promises = require("./helpers/promises");
-var expect = require("chai").expect;
-var sinon  = require("sinon");
-var _        = require("lodash");
+var expect   = require("chai").expect;
+var sinon    = require("sinon");
 
 describe("A Session sends pdu and doesn't receive responce", function() {
 	var server;
 	var session;
-	var response
-	var clock;
 
 	before(function (done) {
-		clock = sinon.useFakeTimers();
 		server = smpp.createServer(function (session) {
-			session.on('bind_transceiver', function () {});
+			session.on("bind_transceiver", function () {});
+			session.on("data_sm", function (pdu) {
+				session.send(pdu.response());
+			});
 		});
 		server.listen(2775);
 		promises.events(server, "listening")
@@ -25,7 +24,6 @@ describe("A Session sends pdu and doesn't receive responce", function() {
 	});
 
 	after(function (done) {
-		clock.restore();
 		session.close();
 		promises.events(session, "close")
 		.then(function () {
@@ -35,20 +33,40 @@ describe("A Session sends pdu and doesn't receive responce", function() {
 		.nodeify(done);
 	});
 
-	it("throws error when it didn't receive response", function () {
-		var callback = function(pdu) {
-			throw new Error("Call callback without response");
-		}
+	describe("call callback with error when it didn't receive response", function () {
+		var clock;
+		var callback;
 
-		var send = function () {
+		before(function () {
+			clock = sinon.useFakeTimers();
+			callback = sinon.spy();
 			session.bind_transceiver({ system_id: 'test' }, callback);
 			clock.tick(session.responseTimeout);
-		};
+		});
 
-		expect(send, "no error").to.throw(Error, /Timed out waiting for response/)
+		after(function () {
+			clock.restore();
+		});
+
+		it("check calling of callback", function () {
+			expect(callback.calledOnce, "called callback").to.be.true;
+			expect(callback.args[0][0], "without error").to.be.an.instanceOf(Error);
+			expect(callback.args[0][0].message, "error message").to.match(/Timed out waiting for response/);
+		});
 	});
 
-	it("removes object from _callback", function () {
-		expect(_.some(session._callbacks, _.isObject), "object still in the array for callbacks").to.be.false;
-	})
+	describe("call callback with pdu when receive response", function () {
+		var callback;
+
+		before(function () {
+			callback = sinon.spy();
+			session.data_sm({}, callback);
+		});
+
+		it("check calling of callback", function () {
+			expect(callback.calledOnce, "called callback").to.be.true;
+			expect(callback.args[0][1], "without pdu").to.exist;
+			expect(callback.args[0][1].command, "command of pdu").to.be.equal("data_sm_resp");
+		});
+	});
 });
