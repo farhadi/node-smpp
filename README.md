@@ -2,7 +2,7 @@ node-smpp
 =========
 SMPP client and server implementation in node.js.
 
-[![Build Status](https://travis-ci.org/farhadi/node-smpp.png)](https://travis-ci.org/farhadi/node-smpp)
+[![Build Status](https://travis-ci.org/inetCatapult/node-smpp.svg?branch=master)](https://travis-ci.org/inetCatapult/node-smpp)
 
 Introduction
 ------------
