@@ -11,12 +11,11 @@ describe("A SMPP PDU", function () {
 
 		before(function () {
 			deliverSm = new smppPDU.PDU("deliver_sm");
-			deliverSm.short_message.message = "Hello";
 			newDeliverSm = new smppPDU.PDU("deliver_sm");
 		});
 
 		it("does not have shared global object in every PDU", function () {
-			expect(deliverSm.short_message, "short_message is shared between PDUs").to.not.deep.equal(newDeliverSm.short_message);
+			expect(deliverSm.short_message, "short_message is shared between PDUs").not.to.equal(newDeliverSm.short_message);
 		});
 	});
 
@@ -80,7 +79,7 @@ describe("A SMPP PDU", function () {
 		});
 
 		it("with user data of Delivery Acknowledgement in 'deliver_sm' and 'data_sm'", function () {
-			expect(deliverSm.short_message.message, "no data in the 'short_message'").to.be.equal(textMessage);
+			expect(deliverSm.short_message, "no data in the 'short_message'").to.be.equal(textMessage);
 			expect(dataSm.message_payload, "no data in the 'message_payload'").to.be.equal(textMessage);
 		});
 	});
@@ -154,6 +153,19 @@ describe("A SMPP PDU", function () {
 			expect(dlrSubmitSm, "pdu with 'submit_sm' command cannot be delivery").to.be.undefined;
 			expect(errorSubmitSm).to.be.an.instanceOf(Error);
 			expect(errorSubmitSm.message).to.contain("Cannot get payload for pdu that is not delivery acknowledgement");
+		});
+	});
+
+	describe("with no 'short_message' field", function () {
+		var pdu;
+
+		before(function () {
+			pdu = new smppPDU.PDU("submit_sm", {});
+		});
+
+		it("uses an empty buffer as the default value", function () {
+			expect(Buffer.isBuffer(pdu.short_message), "value is not a buffer").to.be.true;
+			expect(pdu.short_message, "non-zero length").to.have.length(0);
 		});
 	});
 });
