@@ -18,7 +18,7 @@
     }
   ],
   "scripts": {
-    "test": "mocha --timeout 10000"
+    "test": "mocha"
   },
   "devDependencies": {
     "mocha": "~1.9.0"

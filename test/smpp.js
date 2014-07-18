@@ -14,7 +14,8 @@ describe('Server', function() {
 		});
 
 		afterEach(function (done) {
-			server.close(done);
+			server.once('close', done);
+			server.close();
 		});
 
 		var port;
