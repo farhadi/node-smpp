@@ -1,37 +1,33 @@
 var assert = require('assert'),
-    Q = require('q'),
     Server = require('../lib/smpp').Server;
 
-suite('Server', function() {
+describe('Server', function() {
 	var server;
 
-	setup(function() {
+	before(function() {
 		server = new Server();
 	});
 
-	suite('listen()', function() {
-		teardown(function (done) {
+	describe('#listen()', function() {
+		beforeEach(function (done) {
+			server.listen(0, done);
+		});
+
+		afterEach(function (done) {
 			server.close(done);
 		});
 
-		test('should bind to a random port', function(done) {
-			var port;
+		var port;
 
-			Q.ninvoke(server, 'listen', 0)
-			.then(function () {
-				port = server.address().port;
-				assert.ok(port > 0, 'invalid first port');
-				return Q.ninvoke(server, 'close');
-			})
-			.then(function () {
-				return Q.ninvoke(server, 'listen', 0);
-			})
-			.then(function () {
-				var newPort = server.address().port;
-				assert.ok(newPort > 0, 'invalid second port');
-				assert.notEqual(newPort, port, 'same port');
-			})
-			.nodeify(done);
+		it('should bind to a random port', function() {
+			port = server.address().port;
+			assert.ok(port > 0, 'Invalid first random port');
 		});
+
+		it('should bind to another random port', function() {
+			var newPort = server.address().port;
+			assert.ok(newPort > 0, 'Invalid second random port');
+			assert.notEqual(newPort, port, 'Both random ports are equal!');
+		})
 	});
 });
