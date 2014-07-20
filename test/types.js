@@ -127,6 +127,33 @@ describe('cstring', function() {
 	});
 });
 
+describe('buffer', function() {
+	var b = new Buffer(9), expected = new Buffer('abcd1234');
+	b[0] = 8;
+	b.write(expected.toString(), 1);
+
+	describe('#read()', function() {
+		it('should read a binary field from the buffer', function() {
+			var result = types.buffer.read(b, 0);
+			assert.deepEqual(result, expected);
+		});
+	});
+
+	describe('#size()', function() {
+		it('should return the size of a binary field in bytes', function() {
+			assert.equal(9, types.buffer.size(expected));
+		});
+	});
+
+	describe('#write()', function() {
+		it('should write a binary field to the buffer', function() {
+			var b2 = new Buffer(9);
+			types.buffer.write(expected, b2, 0);
+			assert.deepEqual(b, b2);
+		});
+	});
+});
+
 describe('dest_address_array', function() {
 	var b = new Buffer([
 		0x02, 0x01, 0x01, 0x02, 0x31, 0x32, 0x33, 0x00,
