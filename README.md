@@ -7,7 +7,11 @@ SMPP client and server implementation in node.js.
 Introduction
 ------------
 This is a complete implementation of SMPP v5.0 in node.js, with support for
-custom commands and tlvs.
+custom commands and TLVs.
+
+SMPP v5.0, by design, is backward compatible with v3.4, so you would be able to
+use this module with 3.4 implementations. Even you can use this module with 3.3
+implementations as far as you don't use TLV parameters and don't bind in transceiver mode.
 
 The name of the methods and parameters in this implementation are equivalent to
 the names defined in SMPP specification. So get a copy of
