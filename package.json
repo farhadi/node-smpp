@@ -4,7 +4,7 @@
   "description": "SMPP client and server implementation in node.js",
   "author": "Ali Farhadi <a.farhadi@gmail.com>",
   "engines": {
-    "node": ">=0.6.0"
+    "node": ">=0.8.0"
   },
   "main": "./lib/smpp",
   "repository": {
