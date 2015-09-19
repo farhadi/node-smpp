@@ -7,7 +7,7 @@ describe('PDU', function() {
 	beforeEach(function() {
 		buffer = new Buffer('0000003b000000040000000000000002' +
 			'00010034363730313133333131310001013436373039373' +
-			'731333337000000000000000000000474657374', 'hex');
+			'731333337000000000000000001000474657374', 'hex');
 		expected = {
 			command_length: 59,
 			command_id: 4,
@@ -28,7 +28,7 @@ describe('PDU', function() {
 			validity_period: '',
 			registered_delivery: 0,
 			replace_if_present_flag: 0,
-			data_coding: 0,
+			data_coding: 1,
 			sm_default_msg_id: 0,
 			short_message: { message: 'test' } 
 		};
@@ -55,6 +55,27 @@ describe('PDU', function() {
 			var b = buffer.slice(0, buffer.length - 1);
 			var pdu = PDU.fromBuffer(b);
 			assert(!pdu);
+		});
+	});
+
+	describe('#toBuffer()', function() {
+		it('should create a buffer from a PDU object', function() {
+			var submit_sm = {
+				sequence_number: 2,
+				source_addr_ton: 1,
+				source_addr: '46701133111',
+				dest_addr_ton: 1,
+				dest_addr_npi: 1,
+				destination_addr: '46709771337',
+				short_message: 'test'
+			};
+			var pdu = new PDU('submit_sm', submit_sm);
+			assert.deepEqual(pdu.toBuffer(), buffer);
+
+			submit_sm.data_coding = 0;
+			buffer[52] = 0;
+			var pdu = new PDU('submit_sm', submit_sm);
+			assert.deepEqual(pdu.toBuffer(), buffer);
 		});
 	});
 });
