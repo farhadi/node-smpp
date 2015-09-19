@@ -48,6 +48,13 @@ describe('PDU', function() {
 			var pdu = new PDU(b);
 			assert.deepEqual(pdu, expected);
 		});
+
+		it('it should throw error when PDU length is larger than PDU.maxLength', function() {
+			buffer[0] = 1;
+			assert.throws(function() {
+				var pdu = new PDU(buffer);
+			}, /PDU length was too large/);
+		});
 	});
 
 	describe('#fromBuffer()', function() {
