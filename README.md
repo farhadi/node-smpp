@@ -74,6 +74,29 @@ var server = smpp.createServer(function(session) {
 server.listen(2775);
 ```
 
+Encodings
+---------
+
+This smpp implementation supports 3 encodings: `ASCII` (GSM 03.38), `LATIN1`, and `UCS2`.
+Respective data_coding for these encodings are `0x01`, `0x03`, and `0x08`.
+
+Default encoding for `data_coding:0` is `ASCII`. You can change it as follows:
+
+``` javascript
+smpp.encodings.default = 'LATIN1';
+```
+
+String messages will be automatically encoded using one of these three encodings.
+If the SMSC you are communicating with doesn't support one of these encodings,
+you can simply remove it as follows:
+
+``` javascript
+delete smpp.encodings.ASCII;
+```
+
+You can also manually convert a message to a buffer and pass it as `short_message`
+or `message_payload` parameter to bypass automatic message encoding.
+
 API
 -------
 
@@ -195,10 +218,10 @@ converted to '000000000430000R'.
 * For `short_message` and `message_payload` fields you can specify a buffer or a
 string or an object containing `udh` and `message` properties, while `udh` is a
 buffer and `message` is either a string or a buffer. strings will be
-automatically encoded using ucs2 or ascii depending on their characters. Also
-`data_coding` (if not specified) will be automatically set to 0x01 or 0x08 for
-ascii and ucs2 encodings respectively. Also UDH indicator bit in `esm_class`
-is automatically set if `udh` exists.
+automatically encoded using ASCII, LATIN1, or UCS2 depending on their characters.
+`data_coding` (if not specified) will be automatically set to 0x01, 0x03, or 0x08
+for ASCII, LATIN1, and UCS2 encodings respectively. Also UDH indicator bit in
+`esm_class` is automatically set if `udh` exists.
 * `sm_length` parameter is not needed. It will be automatically set depending on
 the length of the `short_message`.
 * `dest_address` parameter in `submit_multi` operation must be an array of
