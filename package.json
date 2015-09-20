@@ -21,7 +21,7 @@
     "test": "mocha"
   },
   "devDependencies": {
-    "mocha": "1.x"
+    "mocha": "2.x"
   },
   "dependencies": {
     "iconv-lite": "0.x"
