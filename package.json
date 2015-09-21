@@ -11,12 +11,7 @@
     "type": "git",
     "url": "https://github.com/farhadi/node-smpp.git"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://raw.github.com/farhadi/node-smpp/master/LICENSE"
-    }
-  ],
+  "license": "MIT",
   "scripts": {
     "test": "mocha"
   },
