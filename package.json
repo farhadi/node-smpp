@@ -13,9 +13,11 @@
   },
   "license": "MIT",
   "scripts": {
+    "cover": "istanbul cover _mocha",
     "test": "mocha"
   },
   "devDependencies": {
+    "istanbul": "^0.4.3",
     "mocha": "2.x"
   },
   "dependencies": {
