@@ -103,13 +103,16 @@ or `message_payload` parameter to bypass automatic message encoding.
 API
 -------
 
-### smpp.connect(url)
+### smpp.connect(url, [callback])
 Creates a new smpp session using the specified connection url.
 `url` must be a string in this format: `smpp://host:port`. To establish a secure
 smpp connection use `ssmpp` as scheme like in `ssmpp://host:port`.
 If `port` is omitted in the url, the default port (2775 for smpp and 3550 for
 secure smpp) will be used.
 If called without arguments, `smpp://localhost:2775` will be assumed.
+
+The `callback`, if specified, will be added as a listener for the `connect`
+event in plain connections and `secureConnect` event in secure connections.
 
 ### smpp.Session
 This is the base object for a SMPP session. sessions can be created by calling
@@ -157,6 +160,10 @@ session.send(pdu, callback);
 
 #### Event: 'connect'
 Emitted when the session connection successfully is established.
+
+#### Event: 'secureConnect'
+The `secureConnect` event is emitted after the handshaking process for
+a secure connection has successfully completed.
 
 #### Event: 'close'
 Emitted when the connection is fully closed.
