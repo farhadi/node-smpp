@@ -36,9 +36,14 @@ describe('Server', function() {
 
 describe('Session', function() {
 	var server, port, secure = {};
+	var sessionHandler = function(session) {
+		session.on('pdu', function(pdu) {
+			session.send(pdu.response());
+		});
+	};
 
 	before(function(done) {
-		server = smpp.createServer();
+		server = smpp.createServer(sessionHandler);
 		server.listen(0, done);
 		port = server.address().port;
 	});
@@ -47,7 +52,7 @@ describe('Session', function() {
 		secure.server = smpp.createServer({
 			key: fs.readFileSync(__dirname + '/fixtures/server.key'),
 			cert: fs.readFileSync(__dirname + '/fixtures/server.crt')
-		});
+		}, sessionHandler);
 		secure.server.listen(0, done);
 		secure.port = secure.server.address().port;
 	});
@@ -109,6 +114,20 @@ describe('Session', function() {
 				tls: true,
 				rejectUnauthorized: false
 			}, done);
+		});
+	});
+
+	describe('#send()', function() {
+		it('should successfully send a pdu and receive its response', function(done) {
+			var session = smpp.connect({ port: port });
+			var pdu = new smpp.PDU('enquire_link');
+			session.send(pdu, done.bind(this, null));
+		});
+
+		it('should successfully send a pdu using shorthand methods', function(done) {
+			var session = smpp.connect({ port: port });
+			var pdu = new smpp.PDU('enquire_link');
+			session.enquire_link(done.bind(this, null));
 		});
 	});
 });

@@ -1,4 +1,5 @@
 var assert = require('assert'),
+    stream = require('stream'),
     PDU = require('../lib/pdu').PDU;
 
 describe('PDU', function() {
@@ -30,18 +31,27 @@ describe('PDU', function() {
 			replace_if_present_flag: 0,
 			data_coding: 1,
 			sm_default_msg_id: 0,
-			short_message: { message: 'test' } 
+			short_message: { message: 'test' }
 		};
 	});
 
 	describe('#construct', function() {
-		it('it should construct a pdu from buffer', function() {
+		it('should construct a pdu from buffer', function() {
 			var pdu = new PDU(buffer);
 			assert.equal(buffer.length, pdu.command_length);
 			assert.deepEqual(pdu, expected);
 		});
 
-		it('it should not fail with a malformed pdu', function() {
+		it('should extract tlv parameters if available', function() {
+			var b = Buffer.concat([buffer, Buffer('0424000474657374', 'hex')]);
+			b[3] = 67;
+			expected.command_length = 67;
+			expected.message_payload = { message: 'test' };
+			var pdu = new PDU(b);
+			assert.deepEqual(pdu, expected);
+		});
+
+		it('should not fail with a malformed pdu', function() {
 			var b = Buffer.concat([buffer, Buffer([0])]);
 			b[3] = 0x3c;
 			expected.command_length = 60;
@@ -49,11 +59,21 @@ describe('PDU', function() {
 			assert.deepEqual(pdu, expected);
 		});
 
-		it('it should throw error when PDU length is larger than PDU.maxLength', function() {
+		it('should throw error when PDU length is larger than PDU.maxLength', function() {
 			buffer[0] = 1;
 			assert.throws(function() {
 				var pdu = new PDU(buffer);
 			}, /PDU length was too large/);
+		});
+	});
+
+	describe('#fromStream()', function() {
+		it('should extract pdu from stream', function() {
+			var readable = new stream.Readable();
+			readable._read = function() {} ;
+			readable.push(buffer);
+			var pdu = PDU.fromStream(readable);
+			assert.deepEqual(pdu, expected);
 		});
 	});
 
@@ -83,6 +103,16 @@ describe('PDU', function() {
 			buffer[52] = 0;
 			var pdu = new PDU('submit_sm', submit_sm);
 			assert.deepEqual(pdu.toBuffer(), buffer);
+		});
+	});
+
+	describe('#response()', function() {
+		it('should generate a response pdu from the given pdu', function() {
+			var pdu = new PDU(buffer);
+			var response = pdu.response({ message_id: '123456' });
+			assert.equal(response.command, 'submit_sm_resp');
+			assert.equal(response.message_id, '123456');
+			assert.equal(response.sequence_number, 2);
 		});
 	});
 });
