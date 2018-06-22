@@ -137,6 +137,11 @@ Optional `sendCallback` will be called when the pdu is flushed.
 Closes the current session connection.
 If supplied, the `callback` is called once the session is fully closed.
 
+#### session.destroy([callback])
+Forcibly closes the current session connection. This aids some broken servers,
+that don't honor gracefull tear-down. ( Looking at you SMPPSim )
+If supplied, the `callback` is called once the session is fully closed.
+
 #### session.connect()
 Can be used to reconnect a closed connection.
 
