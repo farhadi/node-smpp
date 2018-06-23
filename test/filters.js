@@ -20,8 +20,11 @@ describe('time', function() {
 			assert.deepEqual(filters.time.decode.call(pdu, encoded), value);
 		});
 		it('should convert an SMPP relative time to JavaScript Date object', function() {
-			var expected = new Date(Date.now() + 2 * 3600000 + 6 * 60000 + 30 * 1000);
-			assert.deepEqual(filters.time.decode.call(pdu, encoded2), expected);
+			var expected = new Date(Date.now() + 2 * 3600000 + 6 * 60000 + 30 * 1000).setMilliseconds(0);
+			expected = new Date(expected);
+			var actual = filters.time.decode.call(pdu, encoded2).setMilliseconds(0);
+			actual = new Date(actual);
+			assert.deepEqual(actual, expected);
 		});
 	});
 });
