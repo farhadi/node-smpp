@@ -1,8 +1,9 @@
 var assert = require('assert'),
-    types = require('../lib/defs').types;
+    types = require('../lib/defs').types,
+    utils = require('../lib/utils');
 
 describe('int8', function() {
-	var b = new Buffer([0, 0x65]), expected = 0x65;
+	var b = utils.Buffer([0, 0x65]), expected = 0x65;
 
 	describe('#read()', function() {
 		it('should read one byte as integer', function() {
@@ -20,13 +21,13 @@ describe('int8', function() {
 	describe('#write()', function() {
 		it('should write one byte to the buffer', function() {
 			types.int8.write(expected, b, 0);
-			assert.deepEqual(new Buffer([0x65]), b.slice(0, 1));
+			assert.deepEqual(utils.Buffer([0x65]), b.slice(0, 1));
 		});
 	});
 });
 
 describe('int16', function() {
-	var b = new Buffer([0, 0x05, 0x65]), expected = 0x0565;
+	var b = utils.Buffer([0, 0x05, 0x65]), expected = 0x0565;
 
 	describe('#read()', function() {
 		it('should read 2 bytes as integer', function() {
@@ -44,13 +45,13 @@ describe('int16', function() {
 	describe('#write()', function() {
 		it('should write 2 bytes to the buffer', function() {
 			types.int16.write(expected, b, 0);
-			assert.deepEqual(new Buffer([0x05, 0x65]), b.slice(0, 2));
+			assert.deepEqual(utils.Buffer([0x05, 0x65]), b.slice(0, 2));
 		});
 	});
 });
 
 describe('int32', function() {
-	var b = new Buffer([0, 0x10, 0x02, 0x40, 0x45]), expected = 0x10024045;
+	var b = utils.Buffer([0, 0x10, 0x02, 0x40, 0x45]), expected = 0x10024045;
 
 	describe('#read()', function() {
 		it('should read 4 bytes as integer', function() {
@@ -68,13 +69,13 @@ describe('int32', function() {
 	describe('#write()', function() {
 		it('should write 4 bytes to the buffer', function() {
 			types.int32.write(expected, b, 0);
-			assert.deepEqual(new Buffer([0x10, 0x02, 0x40, 0x45]), b.slice(0, 4));
+			assert.deepEqual(utils.Buffer([0x10, 0x02, 0x40, 0x45]), b.slice(0, 4));
 		});
 	});
 });
 
 describe('string', function() {
-	var b = new Buffer(9), expected = 'abcd1234';
+	var b = utils.Buffer(9), expected = 'abcd1234';
 	b[0] = 8;
 	b.write(expected, 1);
 
@@ -93,7 +94,7 @@ describe('string', function() {
 
 	describe('#write()', function() {
 		it('should write an Octet String to the buffer', function() {
-			var b2 = new Buffer(9);
+			var b2 = utils.Buffer(9);
 			types.string.write(expected, b2, 0);
 			assert.deepEqual(b, b2);
 		});
@@ -101,7 +102,7 @@ describe('string', function() {
 });
 
 describe('cstring', function() {
-	var b = new Buffer(9), expected = 'abcd1234';
+	var b = utils.Buffer(9), expected = 'abcd1234';
 	b[8] = 0;
 	b.write(expected, 0);
 
@@ -120,7 +121,7 @@ describe('cstring', function() {
 
 	describe('#write()', function() {
 		it('should write a C-Octet String (null-terminated string) to the buffer', function() {
-			var b2 = new Buffer(9);
+			var b2 = utils.Buffer(9);
 			types.cstring.write(expected, b2, 0);
 			assert.deepEqual(b, b2);
 		});
@@ -128,7 +129,7 @@ describe('cstring', function() {
 });
 
 describe('buffer', function() {
-	var b = new Buffer(9), expected = new Buffer('abcd1234');
+	var b = utils.Buffer(9), expected = utils.Buffer('abcd1234');
 	b[0] = 8;
 	b.write(expected.toString(), 1);
 
@@ -147,7 +148,7 @@ describe('buffer', function() {
 
 	describe('#write()', function() {
 		it('should write a binary field to the buffer', function() {
-			var b2 = new Buffer(9);
+			var b2 = utils.Buffer(9);
 			types.buffer.write(expected, b2, 0);
 			assert.deepEqual(b, b2);
 		});
@@ -155,7 +156,7 @@ describe('buffer', function() {
 });
 
 describe('dest_address_array', function() {
-	var b = new Buffer([
+	var b = utils.Buffer([
 		0x02, 0x01, 0x01, 0x02, 0x31, 0x32, 0x33, 0x00,
 		0x02, 0x61, 0x62, 0x63, 0x00
 	]);
@@ -183,7 +184,7 @@ describe('dest_address_array', function() {
 
 	describe('#write()', function() {
 		it('should write an array of dest_address structures to the buffer', function() {
-			var b2 = new Buffer(13);
+			var b2 = utils.Buffer(13);
 			types.dest_address_array.write(expected, b2, 0);
 			assert.deepEqual(b, b2);
 		});
@@ -191,7 +192,7 @@ describe('dest_address_array', function() {
 });
 
 describe('unsuccess_sme_array', function() {
-	var b = new Buffer([
+	var b = utils.Buffer([
 		0x02, 0x03, 0x04, 0x61, 0x62, 0x63, 0x00, 0x00, 0x00, 0x00, 0x07,
 		0x05, 0x06, 0x31, 0x32, 0x33, 0x00, 0x10, 0x00, 0x00, 0x08
 	]);
@@ -225,7 +226,7 @@ describe('unsuccess_sme_array', function() {
 
 	describe('#write()', function() {
 		it('should write an array of unsuccess_sme structures to the buffer', function() {
-			var b2 = new Buffer(21);
+			var b2 = utils.Buffer(21);
 			types.unsuccess_sme_array.write(expected, b2, 0);
 			assert.deepEqual(b, b2);
 		});

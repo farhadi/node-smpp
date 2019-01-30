@@ -1,12 +1,13 @@
 var assert = require('assert'),
     stream = require('stream'),
-    PDU = require('../lib/pdu').PDU;
+    PDU = require('../lib/pdu').PDU,
+    utils = require('../lib/utils');
 
 describe('PDU', function() {
 	var buffer, expected;
 
 	beforeEach(function() {
-		buffer = new Buffer('0000003b000000040000000000000002' +
+		buffer = utils.Buffer('0000003b000000040000000000000002' +
 			'00010034363730313133333131310001013436373039373' +
 			'731333337000000000000000001000474657374', 'hex');
 		expected = {
@@ -43,7 +44,7 @@ describe('PDU', function() {
 		});
 
 		it('should extract tlv parameters if available', function() {
-			var b = Buffer.concat([buffer, Buffer('0424000474657374', 'hex')]);
+			var b = Buffer.concat([buffer, utils.Buffer('0424000474657374', 'hex')]);
 			b[3] = 67;
 			expected.command_length = 67;
 			expected.message_payload = { message: 'test' };
@@ -52,7 +53,7 @@ describe('PDU', function() {
 		});
 
 		it('should not fail with a malformed pdu', function() {
-			var b = Buffer.concat([buffer, Buffer([0])]);
+			var b = Buffer.concat([buffer, utils.Buffer([0])]);
 			b[3] = 0x3c;
 			expected.command_length = 60;
 			var pdu = new PDU(b);
