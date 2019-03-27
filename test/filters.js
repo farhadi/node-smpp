@@ -1,5 +1,6 @@
 var assert = require('assert'),
-    filters = require('../lib/defs').filters;
+	filters = require('../lib/defs').filters,
+	Buffer = require('safer-buffer').Buffer;
 
 describe('time', function() {
 	var pdu = {};
@@ -35,8 +36,8 @@ describe('message', function() {
 	};
 	var value = 'This is a Test';
 	var value2 = {message: 'This is a Test'};
-	var value3 = {message: new Buffer('This is a Test')};
-	var encoded = new Buffer(value);
+	var value3 = {message: Buffer.from('This is a Test')};
+	var encoded = Buffer.from(value);
 	describe('#encode()', function() {
 		it('should encode a high-level formatted short message to a low-level buffer', function() {
 			assert.deepEqual(filters.message.encode.call(pdu, value), encoded);

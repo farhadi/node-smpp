@@ -1,5 +1,6 @@
 var assert = require('assert'),
-    encodings = require('../lib/defs').encodings;
+	encodings = require('../lib/defs').encodings,
+	Buffer = require('safer-buffer').Buffer;
 
 describe('encodings', function() {
 	describe('ASCII', function() {
@@ -29,7 +30,7 @@ describe('encodings', function() {
 		describe('#encode', function() {
 			it('should properly encode the given string using GSM 03.38 ASCII charset', function() {
 				for(var str in samples) {
-					assert.deepEqual(ASCII.encode(str), new Buffer(samples[str]));
+					assert.deepEqual(ASCII.encode(str), Buffer.from(samples[str]));
 				}
 			});
 		});
@@ -66,7 +67,7 @@ describe('encodings', function() {
 		describe('#encode', function() {
 			it('should properly encode the given string using LATIN1 charset', function() {
 				for(var str in samples) {
-					assert.deepEqual(LATIN1.encode(str), new Buffer(samples[str]));
+					assert.deepEqual(LATIN1.encode(str), Buffer.from(samples[str]));
 				}
 			});
 		});
@@ -100,7 +101,7 @@ describe('encodings', function() {
 		describe('#encode', function() {
 			it('should properly encode the given string using UCS2 charset', function() {
 				for(var str in samples) {
-					assert.deepEqual(UCS2.encode(str), new Buffer(samples[str]));
+					assert.deepEqual(UCS2.encode(str), Buffer.from(samples[str]));
 				}
 			});
 		});
