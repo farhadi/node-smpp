@@ -29,13 +29,13 @@ describe('time', function() {
 	});
 });
 
-describe('message', function() {
+describe('message GSM', function() {
 	var pdu = {
 		data_coding: 0
 	};
 	var value = 'This is a Test';
-	var value2 = {message: 'This is a Test'};
-	var value3 = {message: new Buffer('This is a Test')};
+	var value2 = {message: value};
+	var value3 = {message: new Buffer(value)};
 	var encoded = new Buffer(value);
 	describe('#encode()', function() {
 		it('should encode a high-level formatted short message to a low-level buffer', function() {
@@ -45,8 +45,107 @@ describe('message', function() {
 		});
 	});
 	describe('#decode()', function() {
-		it('should convert a short message buffer to an object contaning message and optional udh', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
 			assert.deepEqual(filters.message.decode.call(pdu, encoded), value2);
+		});
+	});
+});
+
+describe('message GSM_TR', function() {
+	var stream = [0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x65, 0x1D, 0x74];
+
+	var encodePdu = {
+		data_coding: 0
+	};
+	var encodeValue = {
+		udh: new Buffer([0x03, 0x24, 0x01, 0x01]),
+		message: 'This is a Teşt'
+	};
+	var encoded = new Buffer([0x03, 0x24, 0x01, 0x01, ...stream]);
+	describe('#encode()', function() {
+		it('should encode a high-level formatted short message to a low-level buffer', function() {
+			assert.deepEqual(filters.message.encode.call(encodePdu, encodeValue), encoded);
+			process.exit();
+		});
+	});
+	var decodePdu = {
+		data_coding: 0,
+		esm_class: 0x40
+	};
+	var decodeValue = new Buffer([0x03, 0x24, 0x01, 0x01, ...stream]);
+	var decoded = {
+		udh: new Buffer([0x03, 0x24, 0x01, 0x01]),
+		message: encodeValue
+	};
+	describe('#decode()', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
+			assert.deepEqual(filters.message.decode.call(decodePdu, decodeValue), decoded);
+		});
+	});
+});
+
+describe('message GSM_ES', function() {
+	var stream = [0x54, 0x68, 0x69, 0x73, 0x20, 0x1B, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x05, 0x73, 0x74];
+
+	var encodePdu = {
+		data_coding: 0
+	};
+	var encodeValue = {
+		udh: new Buffer([0x03, 0x25, 0x01, 0x02]),
+		message: 'This ís a Tést'
+	};
+	var encoded = new Buffer([0x03, 0x25, 0x01, 0x02, ...stream]);
+	describe('#encode()', function() {
+		it('should encode a high-level formatted short message to a low-level buffer', function() {
+			assert.deepEqual(filters.message.encode.call(encodePdu, encodeValue), encoded);
+		});
+	});
+
+	var decodePdu = {
+		data_coding: 0,
+		esm_class: 0x40
+	};
+	var decodeValue = new Buffer([0x03, 0x25, 0x01, 0x02, ...stream]);
+	var decoded = {
+		udh: new Buffer([0x03, 0x25, 0x01, 0x02]),
+		message: encodeValue
+	};
+	describe('#decode()', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
+			assert.deepEqual(filters.message.decode.call(decodePdu, decodeValue), decoded);
+		});
+	});
+});
+
+describe('message GSM_PT', function() {
+	var stream = [0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x1D, 0x20, 0x54, 0x1B, 0x18, 0x73, 0x74];
+
+	var encodePdu = {
+		data_coding: 0
+	};
+	var encodeValue = {
+		udh: new Buffer([0x03, 0x25, 0x01, 0x03]),
+		message: 'This is â TΣst'
+	};
+	var encoded = new Buffer([0x03, 0x25, 0x01, 0x03, ...stream]);
+	describe('#encode()', function() {
+		it('should encode a high-level formatted short message to a low-level buffer', function() {
+			assert.deepEqual(filters.message.encode.call(encodePdu, encodeValue), encoded);
+		});
+	});
+
+	var decodePdu = {
+		data_coding: 0,
+		esm_class: 0x40
+	};
+	var decodeValue = new Buffer([0x03, 0x24, 0x01, 0x03, ...stream]);
+	var decoded = {
+		udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
+		message: encodeValue
+	};
+	describe('#decode()', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
+			assert.deepEqual(filters.message.decode.call(decodePdu, decodeValue), decoded);
 		});
 	});
 });

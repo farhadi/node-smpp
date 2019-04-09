@@ -6,11 +6,11 @@ describe('PDU', function() {
 	var buffer, expected;
 
 	beforeEach(function() {
-		buffer = new Buffer('0000003b000000040000000000000002' +
+		buffer = new Buffer('0000003f000000040000000000000002' +
 			'00010034363730313133333131310001013436373039373' +
-			'731333337000000000000000001000474657374', 'hex');
+			'731333337004000000000000001000803240103747B7374', 'hex');
 		expected = {
-			command_length: 59,
+			command_length: 63,
 			command_id: 4,
 			command_status: 0,
 			sequence_number: 2,
@@ -22,7 +22,7 @@ describe('PDU', function() {
 			dest_addr_ton: 1,
 			dest_addr_npi: 1,
 			destination_addr: '46709771337',
-			esm_class: 0,
+			esm_class: 64,
 			protocol_id: 0,
 			priority_flag: 0,
 			schedule_delivery_time: '',
@@ -31,7 +31,10 @@ describe('PDU', function() {
 			replace_if_present_flag: 0,
 			data_coding: 1,
 			sm_default_msg_id: 0,
-			short_message: { message: 'test' }
+			short_message: {
+				udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
+				message: 'tãst'
+			}
 		};
 	});
 
@@ -44,9 +47,11 @@ describe('PDU', function() {
 
 		it('should extract tlv parameters if available', function() {
 			var b = Buffer.concat([buffer, Buffer('0424000474657374', 'hex')]);
-			b[3] = 67;
-			expected.command_length = 67;
-			expected.message_payload = { message: 'test' };
+			b[3] = 71;
+			expected.command_length = 71;
+			expected.message_payload = {
+				message: 'test'
+			};
 			var pdu = new PDU(b);
 			assert.deepEqual(pdu, expected);
 		});
@@ -94,7 +99,10 @@ describe('PDU', function() {
 				dest_addr_ton: 1,
 				dest_addr_npi: 1,
 				destination_addr: '46709771337',
-				short_message: 'test'
+				short_message: {
+					udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
+					message: 'tãst'
+				}
 			};
 			var pdu = new PDU('submit_sm', submit_sm);
 			assert.deepEqual(pdu.toBuffer(), buffer);
