@@ -52,52 +52,46 @@ describe('message GSM', function() {
 });
 
 describe('message GSM_TR', function() {
-	var stream = [0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x65, 0x1D, 0x74];
+	var udh = new Buffer([0x03, 0x24, 0x01, 0x01]);
+	var value = {
+		udh: udh,
+		message: 'This is a Teşt'
+	};
+	var encoded = Buffer.concat([udh, new Buffer([0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x65, 0x1D, 0x74])]);
 
 	var encodePdu = {
 		data_coding: 0
 	};
-	var encodeValue = {
-		udh: new Buffer([0x03, 0x24, 0x01, 0x01]),
-		message: 'This is a Teşt'
-	};
-	var encoded = new Buffer([0x03, 0x24, 0x01, 0x01, ...stream]);
 	describe('#encode()', function() {
 		it('should encode a high-level formatted short message to a low-level buffer', function() {
-			assert.deepEqual(filters.message.encode.call(encodePdu, encodeValue), encoded);
-			process.exit();
+			assert.deepEqual(filters.message.encode.call(encodePdu, value), encoded);
 		});
 	});
 	var decodePdu = {
 		data_coding: 0,
 		esm_class: 0x40
 	};
-	var decodeValue = new Buffer([0x03, 0x24, 0x01, 0x01, ...stream]);
-	var decoded = {
-		udh: new Buffer([0x03, 0x24, 0x01, 0x01]),
-		message: encodeValue
-	};
 	describe('#decode()', function() {
 		it('should convert a short message buffer to an object containing message and optional udh', function() {
-			assert.deepEqual(filters.message.decode.call(decodePdu, decodeValue), decoded);
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), value);
 		});
 	});
 });
 
 describe('message GSM_ES', function() {
-	var stream = [0x54, 0x68, 0x69, 0x73, 0x20, 0x1B, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x05, 0x73, 0x74];
+	var udh = new Buffer([0x03, 0x25, 0x01, 0x02]);
+	var value = {
+		udh: udh,
+		message: 'This ís a Tést'
+	};
+	var encoded = Buffer.concat([udh, new Buffer([0x54, 0x68, 0x69, 0x73, 0x20, 0x1B, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x05, 0x73, 0x74])]);
 
 	var encodePdu = {
 		data_coding: 0
 	};
-	var encodeValue = {
-		udh: new Buffer([0x03, 0x25, 0x01, 0x02]),
-		message: 'This ís a Tést'
-	};
-	var encoded = new Buffer([0x03, 0x25, 0x01, 0x02, ...stream]);
 	describe('#encode()', function() {
 		it('should encode a high-level formatted short message to a low-level buffer', function() {
-			assert.deepEqual(filters.message.encode.call(encodePdu, encodeValue), encoded);
+			assert.deepEqual(filters.message.encode.call(encodePdu, value), encoded);
 		});
 	});
 
@@ -105,32 +99,27 @@ describe('message GSM_ES', function() {
 		data_coding: 0,
 		esm_class: 0x40
 	};
-	var decodeValue = new Buffer([0x03, 0x25, 0x01, 0x02, ...stream]);
-	var decoded = {
-		udh: new Buffer([0x03, 0x25, 0x01, 0x02]),
-		message: encodeValue
-	};
 	describe('#decode()', function() {
 		it('should convert a short message buffer to an object containing message and optional udh', function() {
-			assert.deepEqual(filters.message.decode.call(decodePdu, decodeValue), decoded);
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), value);
 		});
 	});
 });
 
 describe('message GSM_PT', function() {
-	var stream = [0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x1D, 0x20, 0x54, 0x1B, 0x18, 0x73, 0x74];
+	var udh = new Buffer([0x03, 0x25, 0x01, 0x03]);
+	var value = {
+		udh: udh,
+		message: 'This is â TΣst'
+	};
+	var encoded = Buffer.concat([udh, new Buffer([0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x1D, 0x20, 0x54, 0x1B, 0x18, 0x73, 0x74])]);
 
 	var encodePdu = {
 		data_coding: 0
 	};
-	var encodeValue = {
-		udh: new Buffer([0x03, 0x25, 0x01, 0x03]),
-		message: 'This is â TΣst'
-	};
-	var encoded = new Buffer([0x03, 0x25, 0x01, 0x03, ...stream]);
 	describe('#encode()', function() {
 		it('should encode a high-level formatted short message to a low-level buffer', function() {
-			assert.deepEqual(filters.message.encode.call(encodePdu, encodeValue), encoded);
+			assert.deepEqual(filters.message.encode.call(encodePdu, value), encoded);
 		});
 	});
 
@@ -138,14 +127,9 @@ describe('message GSM_PT', function() {
 		data_coding: 0,
 		esm_class: 0x40
 	};
-	var decodeValue = new Buffer([0x03, 0x24, 0x01, 0x03, ...stream]);
-	var decoded = {
-		udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
-		message: encodeValue
-	};
 	describe('#decode()', function() {
 		it('should convert a short message buffer to an object containing message and optional udh', function() {
-			assert.deepEqual(filters.message.decode.call(decodePdu, decodeValue), decoded);
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), value);
 		});
 	});
 });

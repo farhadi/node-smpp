@@ -99,6 +99,7 @@ describe('PDU', function() {
 				dest_addr_ton: 1,
 				dest_addr_npi: 1,
 				destination_addr: '46709771337',
+				esm_class: 64,
 				short_message: {
 					udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
 					message: 'tãst'
