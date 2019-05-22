@@ -29,13 +29,13 @@ describe('time', function() {
 	});
 });
 
-describe('message', function() {
+describe('message GSM', function() {
 	var pdu = {
 		data_coding: 0
 	};
 	var value = 'This is a Test';
-	var value2 = {message: 'This is a Test'};
-	var value3 = {message: new Buffer('This is a Test')};
+	var value2 = {message: value};
+	var value3 = {message: new Buffer(value)};
 	var encoded = new Buffer(value);
 	describe('#encode()', function() {
 		it('should encode a high-level formatted short message to a low-level buffer', function() {
@@ -45,8 +45,103 @@ describe('message', function() {
 		});
 	});
 	describe('#decode()', function() {
-		it('should convert a short message buffer to an object contaning message and optional udh', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
 			assert.deepEqual(filters.message.decode.call(pdu, encoded), value2);
+		});
+	});
+});
+
+describe('message GSM_TR', function() {
+	var udh = new Buffer([0x03, 0x24, 0x01, 0x01]);
+	var value = {
+		udh: udh,
+		message: 'This is a Teşt'
+	};
+	var encoded = Buffer.concat([udh, new Buffer([0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x65, 0x1D, 0x74])]);
+
+	var encodePdu = {
+		data_coding: 0
+	};
+	describe('#encode()', function() {
+		it('should encode a high-level formatted short message to a low-level buffer', function() {
+			assert.deepEqual(filters.message.encode.call(encodePdu, value), encoded);
+		});
+	});
+	var decodePdu = {
+		data_coding: 0,
+		esm_class: 0x40
+	};
+	var decodeValue = {
+		udh: [udh.slice(1)],
+		message: 'This is a Teşt'
+	};
+	describe('#decode()', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), decodeValue);
+		});
+	});
+});
+
+describe('message GSM_ES', function() {
+	var udh = new Buffer([0x03, 0x25, 0x01, 0x02]);
+	var value = {
+		udh: udh,
+		message: 'This ís a Tést'
+	};
+	var encoded = Buffer.concat([udh, new Buffer([0x54, 0x68, 0x69, 0x73, 0x20, 0x1B, 0x69, 0x73, 0x20, 0x61, 0x20, 0x54, 0x05, 0x73, 0x74])]);
+
+	var encodePdu = {
+		data_coding: 0
+	};
+	describe('#encode()', function() {
+		it('should encode a high-level formatted short message to a low-level buffer', function() {
+			assert.deepEqual(filters.message.encode.call(encodePdu, value), encoded);
+		});
+	});
+
+	var decodePdu = {
+		data_coding: 0,
+		esm_class: 0x40
+	};
+	var decodeValue = {
+		udh: [udh.slice(1)],
+		message: 'This ís a Tést'
+	};
+	describe('#decode()', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), decodeValue);
+		});
+	});
+});
+
+describe('message GSM_PT', function() {
+	var udh = new Buffer([0x03, 0x25, 0x01, 0x03]);
+	var value = {
+		udh: udh,
+		message: 'This is â TΣst'
+	};
+	var encoded = Buffer.concat([udh, new Buffer([0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x1D, 0x20, 0x54, 0x1B, 0x18, 0x73, 0x74])]);
+
+	var encodePdu = {
+		data_coding: 0
+	};
+	describe('#encode()', function() {
+		it('should encode a high-level formatted short message to a low-level buffer', function() {
+			assert.deepEqual(filters.message.encode.call(encodePdu, value), encoded);
+		});
+	});
+
+	var decodePdu = {
+		data_coding: 0,
+		esm_class: 0x40
+	};
+	var decodeValue = {
+		udh: [udh.slice(1)],
+		message: 'This is â TΣst'
+	};
+	describe('#decode()', function() {
+		it('should convert a short message buffer to an object containing message and optional udh', function() {
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), decodeValue);
 		});
 	});
 });
