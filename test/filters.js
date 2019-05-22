@@ -71,9 +71,13 @@ describe('message GSM_TR', function() {
 		data_coding: 0,
 		esm_class: 0x40
 	};
+	var decodeValue = {
+		udh: [udh.slice(1)],
+		message: 'This is a Teşt'
+	};
 	describe('#decode()', function() {
 		it('should convert a short message buffer to an object containing message and optional udh', function() {
-			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), value);
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), decodeValue);
 		});
 	});
 });
@@ -99,9 +103,13 @@ describe('message GSM_ES', function() {
 		data_coding: 0,
 		esm_class: 0x40
 	};
+	var decodeValue = {
+		udh: [udh.slice(1)],
+		message: 'This ís a Tést'
+	};
 	describe('#decode()', function() {
 		it('should convert a short message buffer to an object containing message and optional udh', function() {
-			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), value);
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), decodeValue);
 		});
 	});
 });
@@ -127,9 +135,13 @@ describe('message GSM_PT', function() {
 		data_coding: 0,
 		esm_class: 0x40
 	};
+	var decodeValue = {
+		udh: [udh.slice(1)],
+		message: 'This is â TΣst'
+	};
 	describe('#decode()', function() {
 		it('should convert a short message buffer to an object containing message and optional udh', function() {
-			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), value);
+			assert.deepEqual(filters.message.decode.call(decodePdu, encoded), decodeValue);
 		});
 	});
 });

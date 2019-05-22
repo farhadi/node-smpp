@@ -32,7 +32,7 @@ describe('PDU', function() {
 			data_coding: 1,
 			sm_default_msg_id: 0,
 			short_message: {
-				udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
+				udh: [new Buffer([0x24, 0x01, 0x03])],
 				message: 'tãst'
 			}
 		};
@@ -49,9 +49,7 @@ describe('PDU', function() {
 			var b = Buffer.concat([buffer, Buffer('0424000474657374', 'hex')]);
 			b[3] = 71;
 			expected.command_length = 71;
-			expected.message_payload = {
-				message: 'test'
-			};
+			expected.message_payload = { message: 'test' };
 			var pdu = new PDU(b);
 			assert.deepEqual(pdu, expected);
 		});
@@ -109,7 +107,6 @@ describe('PDU', function() {
 			assert.deepEqual(pdu.toBuffer(), buffer);
 
 			submit_sm.data_coding = 0;
-			buffer[52] = 0;
 			var pdu = new PDU('submit_sm', submit_sm);
 			assert.deepEqual(pdu.toBuffer(), buffer);
 		});
