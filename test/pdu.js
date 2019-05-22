@@ -1,12 +1,13 @@
 var assert = require('assert'),
-    stream = require('stream'),
-    PDU = require('../lib/pdu').PDU;
+	stream = require('stream'),
+	PDU = require('../lib/pdu').PDU,
+	Buffer = require('safer-buffer').Buffer;
 
 describe('PDU', function() {
 	var buffer, expected;
 
 	beforeEach(function() {
-		buffer = new Buffer('0000003f000000040000000000000002' +
+		buffer = Buffer.from('0000003f000000040000000000000002' +
 			'00010034363730313133333131310001013436373039373' +
 			'731333337004000000000000001000803240103747B7374', 'hex');
 		expected = {
@@ -32,7 +33,7 @@ describe('PDU', function() {
 			data_coding: 1,
 			sm_default_msg_id: 0,
 			short_message: {
-				udh: [new Buffer([0x24, 0x01, 0x03])],
+				udh: [Buffer.from([0x24, 0x01, 0x03])],
 				message: 'tãst'
 			}
 		};
@@ -46,7 +47,7 @@ describe('PDU', function() {
 		});
 
 		it('should extract tlv parameters if available', function() {
-			var b = Buffer.concat([buffer, Buffer('0424000474657374', 'hex')]);
+			var b = Buffer.concat([buffer, Buffer.from('0424000474657374', 'hex')]);
 			b[3] = 71;
 			expected.command_length = 71;
 			expected.message_payload = { message: 'test' };
@@ -55,7 +56,7 @@ describe('PDU', function() {
 		});
 
 		it('should not fail with a malformed pdu', function() {
-			var b = Buffer.concat([buffer, Buffer([0])]);
+			var b = Buffer.concat([buffer, Buffer.from([0])]);
 			b[3] = 0x3c;
 			expected.command_length = 60;
 			var pdu = new PDU(b);
@@ -99,7 +100,7 @@ describe('PDU', function() {
 				destination_addr: '46709771337',
 				esm_class: 64,
 				short_message: {
-					udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
+					udh: Buffer.from([0x03, 0x24, 0x01, 0x03]),
 					message: 'tãst'
 				}
 			};
