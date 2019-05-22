@@ -33,7 +33,7 @@ describe('PDU', function() {
 			data_coding: 1,
 			sm_default_msg_id: 0,
 			short_message: {
-				udh: [new Buffer([0x24, 0x01, 0x03])],
+				udh: [Buffer.from([0x24, 0x01, 0x03])],
 				message: 'tãst'
 			}
 		};
@@ -100,7 +100,7 @@ describe('PDU', function() {
 				destination_addr: '46709771337',
 				esm_class: 64,
 				short_message: {
-					udh: new Buffer([0x03, 0x24, 0x01, 0x03]),
+					udh: Buffer.from([0x03, 0x24, 0x01, 0x03]),
 					message: 'tãst'
 				}
 			};

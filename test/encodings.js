@@ -142,7 +142,7 @@ describe('encodings', function() {
 		describe('#encode', function() {
 			it('should properly encode the given string using GSM 03.38 Spanish Shift Table charset', function() {
 				for(var str in samples) {
-					assert.deepEqual(gsmCoder.encode(str, 0x01), new Buffer(samples[str]));
+					assert.deepEqual(gsmCoder.encode(str, 0x01), Buffer.from(samples[str]));
 				}
 			});
 		});
@@ -182,7 +182,7 @@ describe('encodings', function() {
 		describe('#encode', function() {
 			it('should properly encode the given string using GSM 03.38 Spanish Shift Table charset', function() {
 				for(var str in samples) {
-					assert.deepEqual(gsmCoder.encode(str, 0x02), new Buffer(samples[str]));
+					assert.deepEqual(gsmCoder.encode(str, 0x02), Buffer.from(samples[str]));
 				}
 			});
 		});
@@ -222,7 +222,7 @@ describe('encodings', function() {
 		describe('#encode', function() {
 			it('should properly encode the given string using GSM 03.38 Portuguese Shift Table charset', function() {
 				for(var str in samples) {
-					assert.deepEqual(gsmCoder.encode(str, 0x03), new Buffer(samples[str]));
+					assert.deepEqual(gsmCoder.encode(str, 0x03), Buffer.from(samples[str]));
 				}
 			});
 		});
