@@ -98,7 +98,7 @@ describe('Session', function() {
 			assert.equal(session.options.host, '127.0.0.1');
 			var session = smpp.connect('ssmpp://localhost');
 			assert(session.options.tls);
-			var session = smpp.connect({ url: 'ssmpp://127.0.0.1:1234'	});
+			var session = smpp.connect({ url: 'ssmpp://127.0.0.1:1234'});
 			assert(session.options.tls);
 			assert.equal(session.options.port, 1234);
 			assert.equal(session.options.host, '127.0.0.1');
@@ -125,8 +125,7 @@ describe('Session', function() {
 		});
 
 		it('should successfully send a pdu using shorthand methods', function(done) {
-			var session = smpp.connect({ port: port });
-			var pdu = new smpp.PDU('enquire_link');
+			var session = smpp.connect({ port: port, auto_enquire_link_period:10000 });
 			session.enquire_link(done.bind(this, null));
 		});
 	});

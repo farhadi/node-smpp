@@ -32,7 +32,10 @@ Usage
 
 ``` javascript
 var smpp = require('smpp');
-var session = smpp.connect('smpp://example.com:2775');
+var session = smpp.connect({
+	url: 'smpp://example.com:2775',
+	auto_enquire_link_period: 10000
+});
 session.bind_transceiver({
 	system_id: 'YOUR_SYSTEM_ID',
 	password: 'YOUR_PASSWORD'
