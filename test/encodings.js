@@ -236,6 +236,102 @@ describe('encodings', function() {
 		});
 	});
 
+	describe('CYRILLIC', function() {
+		var CYRILLIC = encodings.CYRILLIC;
+		var samples = {
+			'Здравствуйте': [0xb7, 0xd4, 0xe0, 0xd0, 0xd2, 0xe1, 0xe2, 0xd2, 0xe3, 0xd9, 0xe2, 0xd5],
+		};
+
+		describe('#match()', function() {
+			it('should always return false (at least for now)', function() {
+				assert(!CYRILLIC.match(''));
+				for(var str in samples) {
+					assert(!CYRILLIC.match(''));
+				}
+			});
+		});
+
+		describe('#encode', function() {
+			it('should properly encode the given string using ISO-8859-5 charset', function() {
+				for(var str in samples) {
+					assert.deepEqual(CYRILLIC.encode(str), Buffer.from(samples[str]));
+				}
+			});
+		});
+
+		describe('#decode', function() {
+			it('should properly decode the given buffer using ISO-8859-5 charset', function() {
+				for(var str in samples) {
+					assert.deepEqual(CYRILLIC.decode(samples[str]), str);
+				}
+			});
+		});
+	});
+
+	describe('HEBREW', function() {
+		var HEBREW = encodings.HEBREW;
+		var samples = {
+			'הלו': [0xe4, 0xec, 0xe5],
+		};
+
+		describe('#match()', function() {
+			it('should always return false (at least for now)', function() {
+				assert(!HEBREW.match(''));
+				for(var str in samples) {
+					assert(!HEBREW.match(''));
+				}
+			});
+		});
+
+		describe('#encode', function() {
+			it('should properly encode the given string using ISO-8859-8 charset', function() {
+				for(var str in samples) {
+					assert.deepEqual(HEBREW.encode(str), Buffer.from(samples[str]));
+				}
+			});
+		});
+
+		describe('#decode', function() {
+			it('should properly decode the given buffer using ISO-8859-8 charset', function() {
+				for(var str in samples) {
+					assert.deepEqual(HEBREW.decode(samples[str]), str);
+				}
+			});
+		});
+	});
+
+	describe('KS_C_5601', function() {
+		var KS_C_5601 = encodings.KS_C_5601;
+		var samples = {
+			'여보세요': [0xbf, 0xa9, 0xba, 0xb8, 0xbc, 0xbc, 0xbf, 0xe4],
+		};
+
+		describe('#match()', function() {
+			it('should always return false (at least for now)', function() {
+				assert(!KS_C_5601.match(''));
+				for(var str in samples) {
+					assert(!KS_C_5601.match(''));
+				}
+			});
+		});
+
+		describe('#encode', function() {
+			it('should properly encode the given string using KS C 5601 charset', function() {
+				for(var str in samples) {
+					assert.deepEqual(KS_C_5601.encode(str), Buffer.from(samples[str]));
+				}
+			});
+		});
+
+		describe('#decode', function() {
+			it('should properly decode the given buffer using KS C 5601 charset', function() {
+				for(var str in samples) {
+					assert.deepEqual(KS_C_5601.decode(samples[str]), str);
+				}
+			});
+		});
+	});
+
 	describe('#detect()', function() {
 		it('should return proper encoding for the given string', function() {
 			assert.equal(encodings.detect(''), 'ASCII');
