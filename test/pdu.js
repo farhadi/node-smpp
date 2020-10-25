@@ -76,7 +76,8 @@ describe('PDU', function() {
 			var readable = new stream.Readable();
 			readable._read = function() {} ;
 			readable.push(buffer);
-			var pdu = PDU.fromStream(readable);
+			var commandLength = PDU.commandLength(readable);
+			var pdu = PDU.fromStream(readable, commandLength);
 			assert.deepEqual(pdu, expected);
 		});
 	});
