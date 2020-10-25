@@ -31,7 +31,7 @@
     "mocha": "2.x"
   },
   "dependencies": {
-    "iconv-lite": "0.x",
+    "iconv-lite": ">= 0.4 < 1",
     "safer-buffer": ">= 2.1.2 < 3"
   }
 }
