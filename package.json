@@ -1,8 +1,13 @@
 {
   "name": "smpp",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "SMPP client and server implementation in node.js",
+  "homepage": "https://github.com/farhadi/node-smpp",
+  "bugs": "https://github.com/farhadi/node-smpp/issues",
   "author": "Ali Farhadi <a.farhadi@gmail.com>",
+  "contributors": [
+    "Julián Gutiérrez <juliangut@gmail.com>"
+  ],
   "engines": {
     "node": ">=0.10.0"
   },
