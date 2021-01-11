@@ -92,6 +92,8 @@ describe('PDU', function() {
 
 	describe('#toBuffer()', function() {
 		it('should create a buffer from a PDU object', function() {
+			var b = Buffer.concat([buffer, Buffer.from('0427000106', 'hex')]);
+			b[3] = 68;
 			var submit_sm = {
 				sequence_number: 2,
 				source_addr_ton: 1,
@@ -103,14 +105,25 @@ describe('PDU', function() {
 				short_message: {
 					udh: Buffer.from([0x03, 0x24, 0x01, 0x03]),
 					message: 'tãst'
-				}
+				},
+				message_state: 6
 			};
 			var pdu = new PDU('submit_sm', submit_sm);
-			assert.deepEqual(pdu.toBuffer(), buffer);
+			assert.deepEqual(pdu.toBuffer(), b);
 
 			submit_sm.data_coding = 0;
 			var pdu = new PDU('submit_sm', submit_sm);
-			assert.deepEqual(pdu.toBuffer(), buffer);
+			assert.deepEqual(pdu.toBuffer(), b);
+		});
+
+		it('should create a buffer from a query_sm_resp PDU object', function() {
+			var b = Buffer.from('0000001480000003000000000000000200000200', 'hex');
+			var query_sm_resp = {
+				sequence_number: 2,
+				message_state: 2
+			};
+			var pdu = new PDU('query_sm_resp', query_sm_resp);
+			assert.deepEqual(pdu.toBuffer(), b);
 		});
 	});
 
