@@ -34,7 +34,8 @@ Usage
 var smpp = require('smpp');
 var session = smpp.connect({
 	url: 'smpp://example.com:2775',
-	auto_enquire_link_period: 10000
+	auto_enquire_link_period: 10000,
+	debug: true
 });
 session.bind_transceiver({
 	system_id: 'YOUR_SYSTEM_ID',
@@ -59,7 +60,9 @@ session.bind_transceiver({
 
 ``` javascript
 var smpp = require('smpp');
-var server = smpp.createServer(function(session) {
+var server = smpp.createServer({
+	debug: true
+}, function(session) {
 	session.on('bind_transceiver', function(pdu) {
 		// we pause the session to prevent further incoming pdu events,
 		// untill we authorize the session with some async operation.
@@ -78,6 +81,19 @@ var server = smpp.createServer(function(session) {
 	});
 });
 server.listen(2775);
+```
+
+### Proxy protocol (v1) support
+Pass `enable_proxy_protocol_detection: true` as server option.
+
+### Debug
+To enable a simple debug of ingoing/outgoing messages pass `debug: true` as server/client option.
+
+Alternatively, you can listen for the `debug` even and write your own implementation:
+``` javascript
+session.on('debug', function(type, msg, payload) {
+	console.log({type: type, msg: msg, payload: payload});
+});
 ```
 
 Encodings
