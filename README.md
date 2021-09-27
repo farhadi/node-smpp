@@ -114,8 +114,16 @@ session.on('error', function(e) {
 
 By default the socket will be dropped after 30000 ms if it doesn't connect. A `connectTimeout` option can be sent when making connections with the server in order to change this setting.
 
-### Proxy protocol (v1) support
+### Proxy protocol (v1) support :
+[Proxy Protocol header specs](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt)
+
 Pass `enable_proxy_protocol_detection: true` as server option.
+- Only Proxy protocol v1 is supported
+- `session.remote_addr` will contain the proxied source ip.
+- `session.socket.remote_addr` will contain the proxy ip.
+- Even with proxy protocol detection enabled the server will understand non-proxied requests.
+- Tests are provided to make sure TCP4, TCP6 & UNKNOWN proxy headers are handled correctly. Tests work by injecting fake proxy protocol headers upon establishing connection.
+- Security: Proxy CIDRs validation is yet to be implemented.
 
 Encodings
 ---------
