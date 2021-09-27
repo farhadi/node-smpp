@@ -338,11 +338,11 @@ describe('Client/Server simulations', function() {
 		});
 	});
 
-	it('should fail to connect with an invalid host and trigger a EAI_AGAIN error', function (done) {
+	it('should fail to connect with an invalid host and trigger a EAI_AGAIN or ENOTFOUND error', function (done) {
 		var session = smpp.connect({url: 'smpp://unknownhost:2775'}, function () {});
 		session.on('error', function(e) {
 			// empty callback to catch emitted errors to prevent exit due unhandled errors
-			assert.equal(e.code, "EAI_AGAIN");
+			assert.notEqual(-1, ["EAI_AGAIN","ENOTFOUND"].indexOf(e.code));
 			done();
 		});
 	});
