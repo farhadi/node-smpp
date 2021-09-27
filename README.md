@@ -94,6 +94,26 @@ session.on('debug', function(type, msg, payload) {
 });
 ```
 
+### Handling client connection errors:
+In case of errors while trying to connect, an `error` event will be emitted by the session and the program will be terminated if it's not listened. This is how you should check for errors.
+
+``` javascript
+session.on('error', function(e) {
+	// empty callback to catch emitted errors to prevent exit due unhandled errors
+	if (e.code === "ETIMEOUT") {
+		// TIMEOUT
+	} else if (e.code === "ECONNREFUSED" {
+		// CONNECTION REFUSED
+	} else {
+		// OTHER ERROR
+	}
+});
+```
+
+### Connection timeout:
+
+By default the socket will be dropped after 30000 ms if it doesn't connect. A `connectTimeout` option can be sent when making connections with the server in order to change this setting.
+
 Encodings
 ---------
 
