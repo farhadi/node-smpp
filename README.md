@@ -34,24 +34,26 @@ Usage
 var smpp = require('smpp');
 var session = smpp.connect({
 	url: 'smpp://example.com:2775',
-	auto_enquire_link_period: 10000
-});
-session.bind_transceiver({
-	system_id: 'YOUR_SYSTEM_ID',
-	password: 'YOUR_PASSWORD'
-}, function(pdu) {
-	if (pdu.command_status == 0) {
-		// Successfully bound
-		session.submit_sm({
-			destination_addr: 'DESTINATION NUMBER',
-			short_message: 'Hello!'
-		}, function(pdu) {
-			if (pdu.command_status == 0) {
-				// Message successfully sent
-				console.log(pdu.message_id);
-			}
-		});
-	}
+	auto_enquire_link_period: 10000,
+	debug: true
+}, function() {
+	session.bind_transceiver({
+		system_id: 'YOUR_SYSTEM_ID',
+		password: 'YOUR_PASSWORD'
+	}, function(pdu) {
+		if (pdu.command_status === 0) {
+			// Successfully bound
+			session.submit_sm({
+				destination_addr: 'DESTINATION NUMBER',
+				short_message: 'Hello!'
+			}, function(pdu) {
+				if (pdu.command_status === 0) {
+					// Message successfully sent
+					console.log(pdu.message_id);
+				}
+			});
+		}
+	});
 });
 ```
 
@@ -59,7 +61,9 @@ session.bind_transceiver({
 
 ``` javascript
 var smpp = require('smpp');
-var server = smpp.createServer(function(session) {
+var server = smpp.createServer({
+	debug: true
+}, function(session) {
 	session.on('bind_transceiver', function(pdu) {
 		// we pause the session to prevent further incoming pdu events,
 		// untill we authorize the session with some async operation.
@@ -78,6 +82,16 @@ var server = smpp.createServer(function(session) {
 	});
 });
 server.listen(2775);
+```
+
+### Debug
+To enable a simple debug of ingoing/outgoing messages pass `debug: true` as server/client option. Debug is disabled by default.
+
+Alternatively, you can listen for the `debug` even and write your own implementation:
+``` javascript
+session.on('debug', function(type, msg, payload) {
+	console.log({type: type, msg: msg, payload: payload});
+});
 ```
 
 Encodings
