@@ -1,8 +1,30 @@
 var assert = require('assert'),
-    smpp = require('..');
+    smpp = require('..'),
+	Buffer = require("safer-buffer").Buffer;
 
 describe('ProxyProtocol', function() {
 	var server, port, debugBuffer = [];
+
+	// Write fake proxy protocol headers into the socket to test proxy protocol support
+	var proxyProtocol = {
+		sendFakeHeader: function(socket, headerString) {
+			socket.write(Buffer.from("PROXY "+headerString, 'ascii'), function() {});
+			return true;
+		},
+		sendFakeHeaderIPv4: function(socket, ipV4Src, ipV4Dest) {
+			if (ipV4Src === undefined) ipV4Src="1.2.3.4";
+			if (ipV4Dest === undefined) ipV4Dest="5.6.7.8";
+			return proxyProtocol.sendFakeHeader(socket, "TCP4 "+ipV4Src+" "+ipV4Dest+" 2775 2775\r\n");
+		},
+		sendFakeHeaderIPv6: function(socket, ipV6Src, ipV6Dest) {
+			if (ipV6Src === undefined) ipV6Src="2001:db8:3333:4444:5555:6666:7777:8888";
+			if (ipV6Dest === undefined) ipV6Dest="2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF";
+			return proxyProtocol.sendFakeHeader(socket, "TCP6 "+ipV6Src+" "+ipV6Dest+" 2775 2775\r\n");
+		},
+		sendFakeHeaderUnknown: function(socket) {
+			return proxyProtocol.sendFakeHeader(socket, "UNKNOWN\r\n");
+		}
+	}
 
 	before(function (done) {
 		server = smpp.createServer({
@@ -31,7 +53,7 @@ describe('ProxyProtocol', function() {
 	it('should decode an IPv4 proxy protocol header and use it as remoteAddress', function (done) {
 		var session = smpp.connect({port: port}, function () {
 			var addr = "1.1.2.2";
-			session.sendFakeProxyProtocolHeaderIPv4(addr);
+			proxyProtocol.sendFakeHeaderIPv4(session.socket, addr);
 			session.enquire_link(function (pdu) {
 				assert.equal(pdu.command, "enquire_link_resp");
 				assert.equal(server.sessions[0].remoteAddress, addr);
@@ -47,7 +69,7 @@ describe('ProxyProtocol', function() {
 	it('should decode an IPv6 proxy protocol header and use it as remoteAddress', function (done) {
 		var session = smpp.connect({port: port}, function () {
 			var addr = "2001:db8:6666:7777:8888:3333:4444:5555";
-			session.sendFakeProxyProtocolHeaderIPv6(addr);
+			proxyProtocol.sendFakeHeaderIPv6(session.socket, addr);
 			session.enquire_link(function (pdu) {
 				assert.equal(pdu.command, "enquire_link_resp");
 				assert.equal(server.sessions[0].remoteAddress, addr);
@@ -62,7 +84,7 @@ describe('ProxyProtocol', function() {
 
 	it('should decode an UNKNOWN proxy protocol header but ignore it', function (done) {
 		var session = smpp.connect({port: port}, function () {
-			session.sendFakeProxyProtocolHeaderUnknown();
+			proxyProtocol.sendFakeHeaderUnknown(session.socket);
 			session.enquire_link(function (pdu) {
 				assert.equal(pdu.command, "enquire_link_resp");
 				// Read the debug entries to find the proxy protocol header address ko notification
