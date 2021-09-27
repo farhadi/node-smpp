@@ -2,7 +2,7 @@ node-smpp
 =========
 SMPP client and server implementation in node.js.
 
-[![Build Status](https://travis-ci.org/farhadi/node-smpp.png)](https://travis-ci.org/farhadi/node-smpp)
+[![Build Status](https://api.travis-ci.com/farhadi/node-smpp.svg?branch=master)](https://app.travis-ci.com/github/farhadi/node-smpp)
 [![Dependency Status](https://david-dm.org/farhadi/node-smpp.svg)](https://david-dm.org/farhadi/node-smpp)
 [![devDependency Status](https://david-dm.org/farhadi/node-smpp/dev-status.svg)](https://david-dm.org/farhadi/node-smpp#info=devDependencies)
 [![Coverage Status](https://coveralls.io/repos/github/farhadi/node-smpp/badge.svg?branch=master)](https://coveralls.io/github/farhadi/node-smpp?branch=master)
@@ -18,7 +18,7 @@ implementations as far as you don't use TLV parameters and don't bind in transce
 
 The name of the methods and parameters in this implementation are equivalent to
 the names defined in SMPP specification. So get a copy of
-[SMPP v5.0 Specification](http://farhadi.ir/downloads/smppv50.pdf)
+[SMPP v5.0 Specification](https://smpp.org/SMPP_v5.pdf)
 for a list of available operations and their parameters.
 
 Installation
