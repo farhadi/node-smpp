@@ -2,7 +2,7 @@ node-smpp
 =========
 SMPP client and server implementation in node.js.
 
-[![Build Status](https://travis-ci.org/farhadi/node-smpp.png)](https://travis-ci.org/farhadi/node-smpp)
+[![Build Status](https://api.travis-ci.com/farhadi/node-smpp.svg?branch=master)](https://app.travis-ci.com/github/farhadi/node-smpp)
 [![Dependency Status](https://david-dm.org/farhadi/node-smpp.svg)](https://david-dm.org/farhadi/node-smpp)
 [![devDependency Status](https://david-dm.org/farhadi/node-smpp/dev-status.svg)](https://david-dm.org/farhadi/node-smpp#info=devDependencies)
 [![Coverage Status](https://coveralls.io/repos/github/farhadi/node-smpp/badge.svg?branch=master)](https://coveralls.io/github/farhadi/node-smpp?branch=master)
@@ -18,7 +18,7 @@ implementations as far as you don't use TLV parameters and don't bind in transce
 
 The name of the methods and parameters in this implementation are equivalent to
 the names defined in SMPP specification. So get a copy of
-[SMPP v5.0 Specification](http://farhadi.ir/downloads/smppv50.pdf)
+[SMPP v5.0 Specification](https://smpp.org/SMPP_v5.pdf)
 for a list of available operations and their parameters.
 
 Installation
@@ -84,11 +84,8 @@ var server = smpp.createServer({
 server.listen(2775);
 ```
 
-### Proxy protocol (v1) support
-Pass `enable_proxy_protocol_detection: true` as server option.
-
 ### Debug
-To enable a simple debug of ingoing/outgoing messages pass `debug: true` as server/client option.
+To enable a simple debug of ingoing/outgoing messages pass `debug: true` as server/client option. Debug is disabled by default.
 
 Alternatively, you can listen for the `debug` even and write your own implementation:
 ``` javascript
@@ -96,6 +93,29 @@ session.on('debug', function(type, msg, payload) {
 	console.log({type: type, msg: msg, payload: payload});
 });
 ```
+
+### Handling client connection errors:
+In case of errors while trying to connect, an `error` event will be emitted by the session and the program will be terminated if it's not listened. This is how you should check for errors.
+
+``` javascript
+session.on('error', function(e) {
+	// empty callback to catch emitted errors to prevent exit due unhandled errors
+	if (e.code === "ETIMEOUT") {
+		// TIMEOUT
+	} else if (e.code === "ECONNREFUSED" {
+		// CONNECTION REFUSED
+	} else {
+		// OTHER ERROR
+	}
+});
+```
+
+### Connection timeout:
+
+By default the socket will be dropped after 30000 ms if it doesn't connect. A `connectTimeout` option can be sent when making connections with the server in order to change this setting.
+
+### Proxy protocol (v1) support
+Pass `enable_proxy_protocol_detection: true` as server option.
 
 Encodings
 ---------
