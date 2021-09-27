@@ -329,4 +329,32 @@ describe('Client/Server simulations', function() {
 		});
 	});
 
+	it('should fail to connect with an invalid port and trigger a ECONNREFUSED error', function (done) {
+		var session = smpp.connect({port: 27750}, function () {});
+		session.on('error', function(e) {
+			// empty callback to catch emitted errors to prevent exit due unhandled errors
+			assert.equal(e.code, "ECONNREFUSED");
+			done();
+		});
+	});
+
+	it('should fail to connect with an invalid host and trigger a EAI_AGAIN error', function (done) {
+		var session = smpp.connect({url: 'smpp://unknownhost:2775'}, function () {});
+		session.on('error', function(e) {
+			// empty callback to catch emitted errors to prevent exit due unhandled errors
+			assert.equal(e.code, "EAI_AGAIN");
+			done();
+		});
+	});
+
+	it('should fail to connect with an invalid host and trigger a ETIMEOUT error', function (done) {
+		var session = smpp.connect({url: 'smpp://1.1.1.1:2775', connectTimeout: 25}, function () {});
+		session.on('error', function(e) {
+			// empty callback to catch emitted errors to prevent exit due unhandled errors
+			assert.equal(e.code, "ETIMEOUT");
+			done();
+		});
+	});
+
+
 });
