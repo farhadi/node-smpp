@@ -64,6 +64,9 @@ var smpp = require('smpp');
 var server = smpp.createServer({
 	debug: true
 }, function(session) {
+	session.on('error', function (err) {
+		// Something ocurred, not listening for this event will terminate the program
+  	});
 	session.on('bind_transceiver', function(pdu) {
 		// we pause the session to prevent further incoming pdu events,
 		// untill we authorize the session with some async operation.
@@ -81,8 +84,11 @@ var server = smpp.createServer({
 		});
 	});
 });
+
 server.listen(2775);
 ```
+
+It's very important to listen for session errors, not listening for error events will terminate the program.
 
 ### Debug
 To enable a simple debug of ingoing/outgoing messages pass `debug: true` as server/client option. Debug is disabled by default.

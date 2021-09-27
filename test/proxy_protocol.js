@@ -3,7 +3,7 @@ var assert = require('assert'),
 	Buffer = require("safer-buffer").Buffer;
 
 describe('ProxyProtocol', function() {
-	var server, port, debugBuffer = [];
+	var server, port, debugBuffer = [], lastServerError;
 
 	// Write fake proxy protocol headers into the socket to test proxy protocol support
 	var proxyProtocol = {
@@ -31,12 +31,18 @@ describe('ProxyProtocol', function() {
 			enable_proxy_protocol_detection: true,
 		}, function (session) {
 			debugBuffer = [];
+			lastServerError = null;
 			session.on('pdu', function(pdu) {
 				session.send(pdu.response()); // Always reply
 			});
 			// We'll use the debug event to track what happened inside the server
 			session.on('debug', function(type, msg, payload) {
 				debugBuffer.push({type: type, msg: msg, payload: payload});
+			});
+			// Errors
+			session.on('error', function (err) {
+				lastServerError = err;
+				session.close();
 			});
 		});
 		server.listen(0, done);
@@ -45,7 +51,7 @@ describe('ProxyProtocol', function() {
 
 	after(function (done) {
 		server.sessions.forEach(function (session) {
-			session.close();
+			session.destroy();
 		});
 		server.close(done);
 	});
@@ -111,6 +117,17 @@ describe('ProxyProtocol', function() {
 				assert.notEqual(debugEntry, null, "proxy_protocol.header.error entry not found in debug log");
 
 				session.close(done);
+			});
+		});
+	});
+
+	it('should fail with a header larger than 108 bytes', function (done) {
+		var session = smpp.connect({port: port}, function () {
+			proxyProtocol.sendFakeHeader(session.socket, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a neque at ex gravida feugiat et a erat. Donec mattis vulputate metus, bibendum dapibus felis egestas vitae. Cras suscipit sodales felis sed tincidunt. Fusce mattis rutrum purus pulvinar porta. Ut feugiat sed turpis nec consectetur. Etiam imperdiet a libero in vulputate. Mauris feugiat arcu ex, et sollicitudin orci laoreet non. Phasellus consequat erat sit amet felis ullamcorper consequat.");
+			session.enquire_link(function (pdu) {});
+			session.on("close", function() {
+				assert.equal(lastServerError.code, "PROXY_PROTOCOL_HEADER_TOO_LARGE");
+				done();
 			});
 		});
 	});
