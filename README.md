@@ -18,7 +18,7 @@ implementations as far as you don't use TLV parameters and don't bind in transce
 
 The name of the methods and parameters in this implementation are equivalent to
 the names defined in SMPP specification. So get a copy of
-[SMPP v5.0 Specification](http://farhadi.ir/downloads/smppv50.pdf)
+[SMPP v5.0 Specification](https://smpp.org/SMPP_v5.pdf)
 for a list of available operations and their parameters.
 
 Installation
