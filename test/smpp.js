@@ -410,7 +410,7 @@ describe('Client/Server simulations', function() {
 		});
 
 		it('should successfully have multiple sessions opened at the same time, closing them all afterwards', function (done) {
-			var totalConnections = 500;
+			var totalConnections = 100;
 			var closedConnections = 0;
 			for (var i = 0; i < totalConnections; i++) {
 				smpp.connect({port: port}, function (session) {
