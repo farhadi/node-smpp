@@ -11,6 +11,22 @@ describe('Server', function() {
 
 	describe('#listen()', function() {
 		beforeEach(function (done) {
+			server.listen(6789, done);
+		});
+
+		afterEach(function (done) {
+			server.once('close', done);
+			server.close();
+		});
+
+		it('should bind to a custom port', function() {
+			assert.ok(server.address().port === 6789, 'Invalid custom port');
+		});
+
+	});
+
+	describe('#listenRandomPort()', function() {
+		beforeEach(function (done) {
 			server.listen(0, done);
 		});
 

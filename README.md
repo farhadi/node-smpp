@@ -64,6 +64,9 @@ var smpp = require('smpp');
 var server = smpp.createServer({
 	debug: true
 }, function(session) {
+	session.on('error', function (err) {
+		// Something ocurred, not listening for this event will terminate the program
+  	});
 	session.on('bind_transceiver', function(pdu) {
 		// we pause the session to prevent further incoming pdu events,
 		// untill we authorize the session with some async operation.
@@ -81,8 +84,11 @@ var server = smpp.createServer({
 		});
 	});
 });
+
 server.listen(2775);
 ```
+
+It's very important to listen for session errors, not listening for error events will terminate the program.
 
 ### Debug
 To enable a simple debug of ingoing/outgoing messages pass `debug: true` as server/client option. Debug is disabled by default.
@@ -113,6 +119,17 @@ session.on('error', function(e) {
 ### Connection timeout:
 
 By default the socket will be dropped after 30000 ms if it doesn't connect. A `connectTimeout` option can be sent when making connections with the server in order to change this setting.
+
+### Proxy protocol (v1) support :
+[Proxy Protocol header specs](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt)
+
+Pass `enable_proxy_protocol_detection: true` as server option.
+- Only Proxy protocol v1 is supported
+- `session.remote_addr` will contain the proxied source ip.
+- `session.socket.remote_addr` will contain the proxy ip.
+- Even with proxy protocol detection enabled the server will understand non-proxied requests.
+- Tests are provided to make sure TCP4, TCP6 & UNKNOWN proxy headers are handled correctly. Tests work by injecting fake proxy protocol headers upon establishing connection.
+- Security: Proxy CIDRs validation is yet to be implemented.
 
 Encodings
 ---------
