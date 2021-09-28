@@ -26,7 +26,7 @@ describe('ProxyProtocol', function() {
 		}
 	}
 
-	before(function (done) {
+	beforeEach(function (done) {
 		server = smpp.createServer({
 			enable_proxy_protocol_detection: true,
 		}, function (session) {
@@ -49,11 +49,12 @@ describe('ProxyProtocol', function() {
 		port = server.address().port;
 	});
 
-	after(function (done) {
+	afterEach(function (done) {
 		server.sessions.forEach(function (session) {
-			session.destroy();
+			session.close();
 		});
-		server.close(done);
+		server.close();
+		done();
 	});
 
 	it('should decode an IPv4 proxy protocol header and use it as remoteAddress', function (done) {
