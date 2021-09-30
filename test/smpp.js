@@ -367,15 +367,6 @@ describe('Client/Server simulations', function() {
 			});
 		});
 
-		it('should fail to connect with an invalid host and trigger a ETIMEOUT error', function (done) {
-			var session = smpp.connect({url: 'smpp://1.1.1.1:2775', connectTimeout: 25});
-			session.on('error', function (e) {
-				// empty callback to catch emitted errors to prevent exit due unhandled errors
-				assert.equal(e.code, "ETIMEOUT");
-				done();
-			});
-		});
-
 	});
 
 

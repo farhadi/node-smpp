@@ -93,11 +93,21 @@ It's very important to listen for session errors, not listening for error events
 ### Debug
 To enable a simple debug of ingoing/outgoing messages pass `debug: true` as server/client option. Debug is disabled by default.
 
-Alternatively, you can listen for the `debug` even and write your own implementation:
+Alternatively, you can listen for the `debug` event and write your own implementation:
 ``` javascript
 session.on('debug', function(type, msg, payload) {
 	console.log({type: type, msg: msg, payload: payload});
 });
+```
+
+A `debugListener` option is also supported:
+``` javascript
+var options = {
+	debug: false,
+	debugListener: function(type, msg, payload) {
+		console.log({type: type, msg: msg, payload: payload});
+	}
+}
 ```
 
 ### Handling client connection errors:
@@ -120,16 +130,23 @@ session.on('error', function(e) {
 
 By default the socket will be dropped after 30000 ms if it doesn't connect. A `connectTimeout` option can be sent when making connections with the server in order to change this setting.
 
-### Proxy protocol (v1) support :
+### Proxy protocol (v1) support (experimental):
 [Proxy Protocol header specs](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt)
 
 Pass `enable_proxy_protocol_detection: true` as server option.
-- Only Proxy protocol v1 is supported
-- `session.remote_addr` will contain the proxied source ip.
-- `session.socket.remote_addr` will contain the proxy ip.
+
+- Only Proxy protocol v1 is supported. Both TCP4 & TCP6.
+- `session.remoteAddress` will contain the proxied source ip.
+- `session.proxyProtocolProxy` will contain the proxy ip.
 - Even with proxy protocol detection enabled the server will understand non-proxied requests.
-- Tests are provided to make sure TCP4, TCP6 & UNKNOWN proxy headers are handled correctly. Tests work by injecting fake proxy protocol headers upon establishing connection.
+- Tests are provided to make sure TCP4 & TCP6 proxy headers are handled correctly. Tests configures the servers to automatically inject fake proxy protocol headers before establishing the net/tls connection.
 - Security: Proxy CIDRs validation is yet to be implemented.
+- Uses [findhit-proxywrap](https://www.npmjs.com/package/findhit-proxywrap), a third party library to wrap the net/tls implementations and decode the proxy-protocol header before forwarding it to the standard implementations.
+- Experimental feature: if no `enable_proxy_protocol_detection: true` option is provided, standard servers are used and the implementation is completely ignored.
+
+####  Compatibility issues:
+- Support for Nodejs < v4 (2015) has been dropped: Changes to supported Nodejs versions due compatibility issues of findhit-proxywrap.
+- On proxied, non-tls connections (with Nodejs < v8): Proxywrap shows some misbehaviour with the way this library inherits from the net server, the socket looses the ability to emit events. As a minor-fix, the `socket.emit` method is backed up and restored after the proxying to the net server, making everything work as expected.
 
 Encodings
 ---------
