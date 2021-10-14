@@ -6,8 +6,6 @@ git:
   depth: 3
 
 node_js:
-  #- '0.10' # Support dropped on 0.6.0
-  #- 0.12 # Support dropped on 0.6.0
   - 4
   - 6
   - 8
