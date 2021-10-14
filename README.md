@@ -265,6 +265,7 @@ name as the operation of that pdu will also be emitted.
 Creates a new SMPP server. The `sessionListener` argument is automatically set
 as a listener for the 'session' event.
 If options include `key` and `cert`, a TLS secured server will be created.
+Include `rejectUnauthorized: false` to disable the certificate validation.
 
 ### smpp.Server
 The base object for a SMPP server created with `smpp.createServer()`.

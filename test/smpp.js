@@ -161,6 +161,16 @@ describe('Session', function() {
 				done();
 			});
 		});
+
+		it('should successfully connect by instantiating a Session directly, skipping the smpp.connect() factory', function(done) {
+			// There are some clients using this approach.
+			// This should be deprecated in the future to make sure every client connection goes through the factory method.
+			var session = new smpp.Session({
+				host: "127.0.0.1",
+				port: port
+			});
+			session.on("connect", done);
+		});
 	});
 
 	describe('#send()', function() {

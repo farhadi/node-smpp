@@ -1,6 +1,6 @@
 {
   "name": "smpp",
-  "version": "0.5.1",
+  "version": "0.6.0-rc.0",
   "description": "SMPP client and server implementation in node.js",
   "homepage": "https://github.com/farhadi/node-smpp",
   "bugs": "https://github.com/farhadi/node-smpp/issues",
