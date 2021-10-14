@@ -9,7 +9,7 @@
     "Julián Gutiérrez <juliangut@gmail.com>"
   ],
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=4"
   },
   "main": "./lib/smpp",
   "repository": {
