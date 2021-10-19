@@ -161,6 +161,16 @@ describe('Session', function() {
 				done();
 			});
 		});
+
+		it('should successfully connect by instantiating a Session directly, skipping the smpp.connect() factory', function(done) {
+			// There are some clients using this approach.
+			// This should be deprecated in the future to make sure every client connection goes through the factory method.
+			var session = new smpp.Session({
+				host: "127.0.0.1",
+				port: port
+			});
+			session.on("connect", done);
+		});
 	});
 
 	describe('#send()', function() {
@@ -354,15 +364,6 @@ describe('Client/Server simulations', function() {
 			session.on('error', function (e) {
 				// empty callback to catch emitted errors to prevent exit due unhandled errors
 				assert.notEqual(-1, ["EAI_AGAIN", "ENOTFOUND", "ESRCH"].indexOf(e.code));
-				done();
-			});
-		});
-
-		it('should fail to connect with an invalid host and trigger a ETIMEOUT error', function (done) {
-			var session = smpp.connect({url: 'smpp://1.1.1.1:2775', connectTimeout: 25});
-			session.on('error', function (e) {
-				// empty callback to catch emitted errors to prevent exit due unhandled errors
-				assert.equal(e.code, "ETIMEOUT");
 				done();
 			});
 		});
