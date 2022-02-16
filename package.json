@@ -22,13 +22,14 @@
     "index.js"
   ],
   "scripts": {
-    "cover": "istanbul cover _mocha",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "test_coverage": "nyc --reporter=text mocha",
     "test": "mocha"
   },
   "devDependencies": {
     "coveralls": "^2.11.9",
-    "istanbul": "^0.4.3",
-    "mocha": "2.x"
+    "mocha": "2.x",
+    "nyc": "^12.0.2"
   },
   "dependencies": {
     "findhit-proxywrap": "^0.3.12",
