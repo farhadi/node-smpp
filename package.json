@@ -28,7 +28,7 @@
   "devDependencies": {
     "coveralls": "^2.11.9",
     "istanbul": "^0.4.3",
-    "mocha": "2.x"
+    "mocha": "^5.2.0"
   },
   "dependencies": {
     "findhit-proxywrap": "^0.3.12",
