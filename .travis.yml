@@ -15,7 +15,7 @@ node_js:
   - 16
 
 script:
-  - npm run-script cover
+  - npm run test_coverage
 
 after_script:
-  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+  - npm run coveralls
