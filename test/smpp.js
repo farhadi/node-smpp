@@ -116,31 +116,46 @@ describe('Session', function() {
 	describe('smpp.connect()', function() {
 		it('should use 2775 or 3550 as default port', function() {
 			var session = smpp.connect();
+			session.on('error', function() {});
 			assert.equal(session.options.port, 2775);
+
 			session = smpp.connect({tls: true});
+			session.on('error', function() {});
 			assert.equal(session.options.port, 3550);
+
 			session = smpp.connect('smpp://localhost');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 2775);
+
 			session = smpp.connect('ssmpp://localhost');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 3550);
 		});
 
 		it('should be backward compatible', function() {
 			var session = smpp.connect('127.0.0.1');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 2775);
 			assert.equal(session.options.host, '127.0.0.1');
+
 			session = smpp.connect('127.0.0.1', 1234);
+			session.on('error', function() {});
 			assert.equal(session.options.port, 1234);
 			assert.equal(session.options.host, '127.0.0.1');
 		});
 
 		it('should properly parse connection url', function() {
 			var session = smpp.connect('smpp://127.0.0.1:1234');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 1234);
 			assert.equal(session.options.host, '127.0.0.1');
+
 			session = smpp.connect('ssmpp://localhost');
+			session.on('error', function() {});
 			assert(session.options.tls);
+
 			session = smpp.connect({ url: 'ssmpp://127.0.0.1:1234'});
+			session.on('error', function() {});
 			assert(session.options.tls);
 			assert.equal(session.options.port, 1234);
 			assert.equal(session.options.host, '127.0.0.1');
