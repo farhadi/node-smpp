@@ -241,14 +241,30 @@ describe('Session', function() {
 			});
 		});
 
+		it('should receive failure callback', function(done) {
+			var session = smpp.connect({ port: autoresponder.port}, function() {
+				session.bind_transceiver({}, function(pdu) {
+					session.socket.writable = false;
+					session.submit_sm(new smpp.PDU('submit_sm'), function(pdu) {
+						throw Error('There should not be response');
+					},
+					function(pdu) {
+						throw Error('There should not be request call');
+					},
+					function(pdu) {
+						assert.equal(pdu.command, 'submit_sm');
+						assert.equal(pdu.command_status, smpp.ESME_RSUBMITFAIL);
+						done();
+					});
+				});
+			});
+		});
 	});
-
 });
 
 describe('Client/Server simulations', function() {
 
 	describe('standard connection simulations', function() {
-
 		var server, port, debugBuffer = [], lastServerError;
 
 		beforeEach(function (done) {
@@ -391,7 +407,6 @@ describe('Client/Server simulations', function() {
 				done();
 			});
 		});
-
 	});
 
 
@@ -449,10 +464,6 @@ describe('Client/Server simulations', function() {
 					done(); // Test ok
 				}
 			}, 10);
-
 		});
-
-
 	});
-
 });
