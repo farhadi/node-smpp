@@ -34,6 +34,7 @@
   "dependencies": {
     "findhit-proxywrap": "^0.3.12",
     "iconv-lite": "0.x",
+    "prom-client": "^14.0.1",
     "safer-buffer": ">= 2.1.2 < 3"
   }
 }

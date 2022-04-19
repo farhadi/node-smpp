@@ -6,13 +6,11 @@ git:
   depth: 3
 
 node_js:
-  - 4
-  - 6
-  - 8
   - 10
   - 12
   - 14
   - 16
+  - 18
 
 script:
   - npm run test_coverage
