@@ -1,6 +1,6 @@
 {
   "name": "smpp",
-  "version": "0.6.0-rc.1",
+  "version": "0.6.0-rc.3",
   "description": "SMPP client and server implementation in node.js",
   "homepage": "https://github.com/farhadi/node-smpp",
   "bugs": "https://github.com/farhadi/node-smpp/issues",
@@ -22,13 +22,14 @@
     "index.js"
   ],
   "scripts": {
-    "cover": "istanbul cover _mocha",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "test_coverage": "nyc --reporter=text mocha",
     "test": "mocha"
   },
   "devDependencies": {
     "coveralls": "^2.11.9",
-    "istanbul": "^0.4.3",
-    "mocha": "2.x"
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2"
   },
   "dependencies": {
     "findhit-proxywrap": "^0.3.12",

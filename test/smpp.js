@@ -116,31 +116,46 @@ describe('Session', function() {
 	describe('smpp.connect()', function() {
 		it('should use 2775 or 3550 as default port', function() {
 			var session = smpp.connect();
+			session.on('error', function() {});
 			assert.equal(session.options.port, 2775);
+
 			session = smpp.connect({tls: true});
+			session.on('error', function() {});
 			assert.equal(session.options.port, 3550);
+
 			session = smpp.connect('smpp://localhost');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 2775);
+
 			session = smpp.connect('ssmpp://localhost');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 3550);
 		});
 
 		it('should be backward compatible', function() {
 			var session = smpp.connect('127.0.0.1');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 2775);
 			assert.equal(session.options.host, '127.0.0.1');
+
 			session = smpp.connect('127.0.0.1', 1234);
+			session.on('error', function() {});
 			assert.equal(session.options.port, 1234);
 			assert.equal(session.options.host, '127.0.0.1');
 		});
 
 		it('should properly parse connection url', function() {
 			var session = smpp.connect('smpp://127.0.0.1:1234');
+			session.on('error', function() {});
 			assert.equal(session.options.port, 1234);
 			assert.equal(session.options.host, '127.0.0.1');
+
 			session = smpp.connect('ssmpp://localhost');
+			session.on('error', function() {});
 			assert(session.options.tls);
+
 			session = smpp.connect({ url: 'ssmpp://127.0.0.1:1234'});
+			session.on('error', function() {});
 			assert(session.options.tls);
 			assert.equal(session.options.port, 1234);
 			assert.equal(session.options.host, '127.0.0.1');
@@ -226,14 +241,30 @@ describe('Session', function() {
 			});
 		});
 
+		it('should receive failure callback', function(done) {
+			var session = smpp.connect({ port: autoresponder.port}, function() {
+				session.bind_transceiver({}, function(pdu) {
+					session.socket.writable = false;
+					session.submit_sm(new smpp.PDU('submit_sm'), function(pdu) {
+						throw Error('There should not be response');
+					},
+					function(pdu) {
+						throw Error('There should not be request call');
+					},
+					function(pdu) {
+						assert.equal(pdu.command, 'submit_sm');
+						assert.equal(pdu.command_status, smpp.ESME_RSUBMITFAIL);
+						done();
+					});
+				});
+			});
+		});
 	});
-
 });
 
 describe('Client/Server simulations', function() {
 
 	describe('standard connection simulations', function() {
-
 		var server, port, debugBuffer = [], lastServerError;
 
 		beforeEach(function (done) {
@@ -376,7 +407,6 @@ describe('Client/Server simulations', function() {
 				done();
 			});
 		});
-
 	});
 
 
@@ -434,10 +464,6 @@ describe('Client/Server simulations', function() {
 					done(); // Test ok
 				}
 			}, 10);
-
 		});
-
-
 	});
-
 });

@@ -204,7 +204,7 @@ This is the base object for a SMPP session. sessions can be created by calling
 establishes a connection to the server. In this case the server passes the
 session object to the `'session'` event listener.
 
-#### session.send(pdu, [responseCallback], [sendCallback])
+#### session.send(pdu, [responseCallback], [sendCallback], [failureCallback])
 Sends a pdu request/response to the MC/ESME over the session.
 The `pdu` is an instance of `smpp.PDU` which might be either a response or
 a request pdu.
@@ -215,7 +215,9 @@ the proper value.
 If the `pdu` is a request pdu, when the relevant response is received, the
 optional `responseCallback` parameter will be invoked with the response pdu passed to it.
 
-Optional `sendCallback` will be called when the pdu is flushed.
+Optional `sendCallback` will be called when the pdu is successfully flushed.
+
+Optional `failureCallback` will be called whenever it is not possible to write to the socket.
 
 #### session.close([callback])
 Closes the current session connection.
@@ -240,11 +242,11 @@ For all smpp operations you can call methods with the same name as the operation
 name, which is equivalent to createing a pdu instance and then sending it over
 the session.
 
-For example calling `session.submit_sm(options, callback)` is equivalent to:
+For example calling `session.submit_sm(options, [responseCallback], [sendCallback], [failureCallback])` is equivalent to:
 
 ``` javascript
 var pdu = new smpp.PDU('submit_sm', options);
-session.send(pdu, callback);
+session.send(pdu, responseCallback);
 ```
 
 #### Event: 'connect'
