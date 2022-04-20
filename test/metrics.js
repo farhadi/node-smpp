@@ -39,8 +39,13 @@ describe('Prometheus metrics', function() {
 			});
 			session.on('submit_sm', function (pdu) {
 				var response = pdu.response();
-				response.message_id = "123456789 sent to " + pdu.destination_addr; // Injected to verify the data received by the server
-				session.send(response);
+				if (pdu.destination_addr==="BAD_PHONE_NUMBER") {
+					response.message_id = "123456789 sent to " + pdu.destination_addr; // Injected to verify the data received by the server
+					session.send(response);
+				} else {
+					response.message_id = "123456789 sent to " + pdu.destination_addr; // Injected to verify the data received by the server
+					session.send(response);
+				}
 			});
 			session.on('bind_transceiver', function (pdu) {
 				// pause the session to prevent further incoming pdu events,
@@ -138,6 +143,51 @@ describe('Prometheus metrics', function() {
 								assert(bodyClient.match('smpp_tests_pdu_command_in{command="submit_sm_resp",label="my-custom-label",smpp_mode="client"} 1'));
 								// custom metric added
 								assert(bodyClient.match('smpp_tests_my_awesome_metric{my_custom_label="label1",label="my-custom-label",smpp_mode="client"} 25'));
+								done();
+							});
+						});
+					});
+				});
+			});
+		});
+
+		it('Should expose monitoring metrics errors', function (done) {
+			var session = smpp.connect({
+				port: port,
+				metricsEnabled: true,
+				metricsPort: clientMetricsPort,
+				metricsLabels: {"label": "my-custom-label"},
+				metricsPrefix: "smpp_tests_"
+			}, function () {
+				session.bind_transceiver({
+					system_id: 'FAKE_USER',
+					password: 'FAKE_PASSWORD'
+				}, function (pdu) {
+					assert.equal(pdu.command, "bind_transceiver_resp");
+					assert.equal(pdu.command_status, smpp.ESME_ROK);
+					// Inject custom errors which are not naturally produced in these tests
+					session.metricsHandler.clientEvent('pdu.command.error', 1, {});
+					server.metricsHandler.serverEvent('pdu.command.error', 1, {});
+					session.metricsHandler.clientEvent('socket.error', 1, {});
+					server.metricsHandler.serverEvent('socket.error', 1, {});
+					session.metricsHandler.clientEvent('socket.data.error', 1, {});
+					server.metricsHandler.serverEvent('socket.data.error', 1, {});
+					// send fake message
+					session.submit_sm({
+						destination_addr: "BAD_PHONE_NUMBER",
+						short_message: "Hello!"
+					}, function (pdu) {
+						assert.equal(pdu.command_status, smpp.ESME_ROK);
+						httpGet('localhost', serverMetricsPort, '/metrics').then((bodyServer)=> {
+							// global metrics
+							assert(bodyServer.match('smpp_tests_pdu_command_error{label="my-custom-label",smpp_mode="server"} 1'));
+							assert(bodyServer.match('smpp_tests_socket_error{label="my-custom-label",smpp_mode="server"} 1'));
+							assert(bodyServer.match('smpp_tests_socket_data_error{label="my-custom-label",smpp_mode="server"} 1'));
+							httpGet('localhost', clientMetricsPort, '/metrics').then((bodyClient)=> {
+								// global metrics
+								assert(bodyClient.match('smpp_tests_pdu_command_error{label="my-custom-label",smpp_mode="client"} 1'));
+								assert(bodyClient.match('smpp_tests_socket_error{label="my-custom-label",smpp_mode="client"} 1'));
+								assert(bodyClient.match('smpp_tests_socket_data_error{label="my-custom-label",smpp_mode="client"} 1'));
 								done();
 							});
 						});
