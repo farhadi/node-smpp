@@ -260,15 +260,16 @@ describe('Session', function() {
 			});
 		});
 	});
+
 });
 
 describe('Client/Server simulations', function() {
 
 	describe('standard connection simulations', function() {
-		var server, port, debugBuffer = [], lastServerError;
+		var server, port, secure = {}, debugBuffer = [], lastServerError;
 
 		beforeEach(function (done) {
-			server = smpp.createServer({}, function (session) {
+			var sessionHandler = function (session) {
 				debugBuffer = [];
 				// We'll use the debug event to track what happened inside the server
 				session.on('debug', function(type, msg, payload) {
@@ -307,16 +308,29 @@ describe('Client/Server simulations', function() {
 					lastServerError = err;
 					session.close();
 				});
-			});
-			server.listen(0, done);
+			}
+			server = smpp.createServer({}, sessionHandler);
+			server.listen(0);
 			port = server.address().port;
+
+			secure.server = smpp.createServer({
+				key: fs.readFileSync(__dirname + '/fixtures/server.key'),
+				cert: fs.readFileSync(__dirname + '/fixtures/server.crt')
+			}, sessionHandler);
+			secure.server.listen(0, done);
+			secure.port = secure.server.address().port;
 		});
 
 		afterEach(function (done) {
 			server.sessions.forEach(function (session) {
 				session.close();
 			});
-			server.close(done);
+			server.close();
+
+			secure.server.sessions.forEach(function (session) {
+				session.close();
+			});
+			secure.server.close(done);
 		});
 
 		it('should successfully bind a transceiver with a hardcoded user/password', function (done) {
@@ -405,6 +419,53 @@ describe('Client/Server simulations', function() {
 				// empty callback to catch emitted errors to prevent exit due unhandled errors
 				assert.equal(e.code, "ETIMEOUT");
 				done();
+			});
+		});
+
+		it('should successfully emit every expected metric', function (done) {
+			var clientMetricsEmitted = [], serverMetricsEmitted = [], metricsEntry = null;
+			var session = smpp.connect({
+				port: secure.port,
+				tls: true,
+				rejectUnauthorized: false
+			}, function () {
+				session.bind_transceiver({
+					system_id: 'FAKE_USER',
+					password: 'FAKE_PASSWORD'
+				}, function (pdu) {
+					session.close(function() {
+						// Check client metrics
+						for (i = 0, metricsEntry = null; i < clientMetricsEmitted.length && metricsEntry === null; i++) if (clientMetricsEmitted[i].event === "server.connected") metricsEntry = clientMetricsEmitted[i];
+						assert.notEqual(metricsEntry.event, null, "server.connected entry not found in metrics");
+						for (i = 0, metricsEntry = null; i < clientMetricsEmitted.length && metricsEntry === null; i++) if (clientMetricsEmitted[i].event === "pdu.command.out") metricsEntry = clientMetricsEmitted[i];
+						assert.notEqual(metricsEntry.event, null, "pdu.command.out entry not found in metrics");
+						for (i = 0, metricsEntry = null; i < clientMetricsEmitted.length && metricsEntry === null; i++) if (clientMetricsEmitted[i].event === "pdu.command.in") metricsEntry = clientMetricsEmitted[i];
+						assert.notEqual(metricsEntry.event, null, "pdu.command.in entry not found in metrics");
+						for (i = 0, metricsEntry = null; i < clientMetricsEmitted.length && metricsEntry === null; i++) if (clientMetricsEmitted[i].event === "server.disconnected") metricsEntry = clientMetricsEmitted[i];
+						assert.notEqual(metricsEntry.event, null, "server.disconnected entry not found in metrics");
+					})
+				});
+			});
+			// Add metrics loggers
+			session.on("metrics", function(event, value, payload, context) {
+				clientMetricsEmitted.push({event: event, value: value, payload: payload});
+			});
+			secure.server.on("session", function(serverSession) {
+				serverSession.on("metrics", function(event, value, payload, context) {
+					serverMetricsEmitted.push({event: event, value: value, payload: payload});
+				})
+				serverSession.on("close", function() {
+					// Check server metrics
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "client.connected") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "client.connected entry not found in metrics");
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "pdu.command.out") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "pdu.command.out entry not found in metrics");
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "pdu.command.in") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "pdu.command.in entry not found in metrics");
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "client.disconnected") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "client.disconnected entry not found in metrics");
+					done();
+				})
 			});
 		});
 	});
