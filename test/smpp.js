@@ -443,16 +443,6 @@ describe('Client/Server simulations', function() {
 						assert.notEqual(metricsEntry.event, null, "pdu.command.in entry not found in metrics");
 						for (i = 0, metricsEntry = null; i < clientMetricsEmitted.length && metricsEntry === null; i++) if (clientMetricsEmitted[i].event === "server.disconnected") metricsEntry = clientMetricsEmitted[i];
 						assert.notEqual(metricsEntry.event, null, "server.disconnected entry not found in metrics");
-						// Check server metrics
-						for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "client.connected") metricsEntry = serverMetricsEmitted[i];
-						assert.notEqual(metricsEntry.event, null, "client.connected entry not found in metrics");
-						for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "pdu.command.out") metricsEntry = serverMetricsEmitted[i];
-						assert.notEqual(metricsEntry.event, null, "pdu.command.out entry not found in metrics");
-						for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "pdu.command.in") metricsEntry = serverMetricsEmitted[i];
-						assert.notEqual(metricsEntry.event, null, "pdu.command.in entry not found in metrics");
-						for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "client.disconnected") metricsEntry = serverMetricsEmitted[i];
-						assert.notEqual(metricsEntry.event, null, "client.disconnected entry not found in metrics");
-						done();
 					})
 				});
 			});
@@ -463,6 +453,18 @@ describe('Client/Server simulations', function() {
 			secure.server.on("session", function(serverSession) {
 				serverSession.on("metrics", function(event, value, payload, context) {
 					serverMetricsEmitted.push({event: event, value: value, payload: payload});
+				})
+				serverSession.on("close", function() {
+					// Check server metrics
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "client.connected") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "client.connected entry not found in metrics");
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "pdu.command.out") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "pdu.command.out entry not found in metrics");
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "pdu.command.in") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "pdu.command.in entry not found in metrics");
+					for (i = 0, metricsEntry = null; i < serverMetricsEmitted.length && metricsEntry === null; i++) if (serverMetricsEmitted[i].event === "client.disconnected") metricsEntry = serverMetricsEmitted[i];
+					assert.notEqual(metricsEntry.event, null, "client.disconnected entry not found in metrics");
+					done();
 				})
 			});
 		});
