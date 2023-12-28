@@ -125,7 +125,7 @@ session.on('error', function(e) {
 	// empty callback to catch emitted errors to prevent exit due unhandled errors
 	if (e.code === "ETIMEOUT") {
 		// TIMEOUT
-	} else if (e.code === "ECONNREFUSED" {
+	} else if (e.code === "ECONNREFUSED") {
 		// CONNECTION REFUSED
 	} else {
 		// OTHER ERROR
