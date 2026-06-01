@@ -69,6 +69,26 @@ describe('PDU', function() {
 				var pdu = new PDU(buffer);
 			}, /PDU length was too large/);
 		});
+
+		it('should construct a pdu from parameters same as from buffer (encode/decode)', function() {
+			var orig = new PDU('submit_sm', {
+				sequence_number: 2,
+				source_addr_ton: 1,
+				source_addr: '46701133111',
+				dest_addr_ton: 1,
+				dest_addr_npi: 1,
+				destination_addr: '46709771337',
+				esm_class: 64,
+				short_message: {
+					udh: Buffer.from([0x03, 0x24, 0x01, 0x03]),
+					message: 'tãst'
+				},
+				message_state: 6
+			});
+			var re = new PDU(orig.toBuffer());
+			re.toBuffer();
+			assert.deepEqual(re, orig);
+		});
 	});
 
 	describe('#fromStream()', function() {

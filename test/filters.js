@@ -35,12 +35,18 @@ describe('message GSM', function() {
 		data_coding: 0
 	};
 	var value = 'This is a Test';
+	var value0 = true;
+	var value1 = 3.145;
 	var value2 = {message: value};
 	var value3 = {message: Buffer.from(value)};
 	var encoded = Buffer.from(value);
+	var encoded0 = Buffer.from(String(value0));
+	var encoded1 = Buffer.from(String(value1));
 	describe('#encode()', function() {
 		it('should encode a high-level formatted short message to a low-level buffer', function() {
 			assert.deepEqual(filters.message.encode.call(pdu, value), encoded);
+			assert.deepEqual(filters.message.encode.call(pdu, value0), encoded0);
+			assert.deepEqual(filters.message.encode.call(pdu, value1), encoded1);
 			assert.deepEqual(filters.message.encode.call(pdu, value2), encoded);
 			assert.deepEqual(filters.message.encode.call(pdu, value3), encoded);
 		});
